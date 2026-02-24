@@ -1,0 +1,23 @@
+{
+  "name": "processflowpro",
+  "version": "0.0.1",
+  "description": "KI-optimierte Workflow-Automatisierung für Lohnabrechnung",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r run dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "test": "pnpm -r test",
+    "test:watch": "pnpm -r test:watch",
+    "seed:demo": "pnpm --filter backend seed:demo"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "typescript": "^5.2.0"
+  }
+}
