@@ -58,27 +58,26 @@ export class SetupService {
       }
 
       // Create default tenant
-      let tenant: Tenant | null = await this.tenantsRepository.findOne({ where: { name: 'Demo Tenant' } });
-      if (!tenant) {
-        const tenantData = {
+      let existingTenant = await this.tenantsRepository.findOne({ where: { name: 'Demo Tenant' } });
+      let tenant: Tenant;
+
+      if (!existingTenant) {
+        tenant = this.tenantsRepository.create({
           name: 'Demo Tenant',
           plan: 'professional',
           settings: {
             timezone: 'Europe/Berlin',
             language: 'de',
           },
-        };
-        tenant = this.tenantsRepository.create(tenantData as any);
+        });
         tenant = await this.tenantsRepository.save(tenant);
-      }
-
-      if (!tenant) {
-        throw new Error('Failed to create tenant');
+      } else {
+        tenant = existingTenant;
       }
 
       // Create default admin user
       const hashedPassword = await bcrypt.hash('password', 10);
-      const adminUserData = {
+      const adminUser = this.usersRepository.create({
         email: 'owner@demo.com',
         name: 'Demo Owner',
         passwordHash: hashedPassword,
@@ -86,8 +85,7 @@ export class SetupService {
         tenantId: tenant.id,
         capacityPointsLimit: 100,
         isActive: true,
-      };
-      const adminUser = this.usersRepository.create(adminUserData as any);
+      });
       await this.usersRepository.save(adminUser);
 
       // Create additional demo users
@@ -98,7 +96,7 @@ export class SetupService {
       ];
 
       for (const userData of demoUsers) {
-        const userData2 = {
+        const user = this.usersRepository.create({
           email: userData.email,
           name: userData.name,
           passwordHash: hashedPassword,
@@ -106,8 +104,7 @@ export class SetupService {
           tenantId: tenant.id,
           capacityPointsLimit: 80,
           isActive: true,
-        };
-        const user = this.usersRepository.create(userData2 as any);
+        });
         await this.usersRepository.save(user);
       }
 
