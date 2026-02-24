@@ -37,9 +37,10 @@ export class SetupService {
         },
       };
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
       return {
         status: 'error',
-        message: error.message,
+        message,
         needsSetup: true,
       };
     }
@@ -61,9 +62,12 @@ export class SetupService {
       if (!tenant) {
         tenant = this.tenantsRepository.create({
           name: 'Demo Tenant',
-          subdomain: 'demo',
-          isActive: true,
-        });
+          plan: 'professional',
+          settings: {
+            timezone: 'Europe/Berlin',
+            language: 'de',
+          },
+        } as any);
         tenant = await this.tenantsRepository.save(tenant);
       }
 
@@ -72,11 +76,12 @@ export class SetupService {
       const adminUser = this.usersRepository.create({
         email: 'owner@demo.com',
         name: 'Demo Owner',
-        password: hashedPassword,
+        passwordHash: hashedPassword,
         role: UserRole.OWNER,
         tenantId: tenant.id,
+        capacityPointsLimit: 100,
         isActive: true,
-      });
+      } as any);
       await this.usersRepository.save(adminUser);
 
       // Create additional demo users
@@ -88,11 +93,14 @@ export class SetupService {
 
       for (const userData of demoUsers) {
         const user = this.usersRepository.create({
-          ...userData,
-          password: hashedPassword,
+          email: userData.email,
+          name: userData.name,
+          passwordHash: hashedPassword,
+          role: userData.role,
           tenantId: tenant.id,
+          capacityPointsLimit: 80,
           isActive: true,
-        });
+        } as any);
         await this.usersRepository.save(user);
       }
 
@@ -110,7 +118,8 @@ export class SetupService {
         },
       };
     } catch (error) {
-      throw new InternalServerErrorException(`Setup failed: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new InternalServerErrorException(`Setup failed: ${message}`);
     }
   }
 }

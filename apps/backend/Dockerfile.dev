@@ -27,6 +27,9 @@ RUN pnpm run build || true
 
 WORKDIR /app/apps/backend
 
+# Build backend
+RUN pnpm run build
+
 # Expose API port
 EXPOSE 3000
 

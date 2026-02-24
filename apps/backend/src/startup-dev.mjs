@@ -25,7 +25,7 @@ while (retries > 0) {
 // Run migrations
 console.log('📦 Running database migrations...');
 try {
-  execSync('pnpm run db:migration:run', { stdio: 'inherit' });
+  execSync('pnpm exec typeorm migration:run -d dist/database/data-source.js', { stdio: 'inherit' });
   console.log('✅ Migrations completed\n');
 } catch (error) {
   console.error('❌ Migration failed:', error.message);
