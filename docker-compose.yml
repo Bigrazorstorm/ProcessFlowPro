@@ -84,7 +84,7 @@ services:
     profiles:
       - fullstack
 
-  # Frontend service (optional - can also run locally with pnpm run dev)
+  # .Frontend service (optional - can also run locally with pnpm run dev)
   frontend:
     build:
       context: .
