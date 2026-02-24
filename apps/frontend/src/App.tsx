@@ -4,6 +4,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
+import Clients from './pages/Clients';
+import Templates from './pages/Templates';
+import TemplateEditor from './pages/TemplateEditor';
 
 function App() {
   return (
@@ -24,6 +27,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Users />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clients"
+            element={
+              <ProtectedRoute>
+                <Clients />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/templates"
+            element={
+              <ProtectedRoute>
+                <Templates />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/templates/:id"
+            element={
+              <ProtectedRoute>
+                <TemplateEditor />
               </ProtectedRoute>
             }
           />
