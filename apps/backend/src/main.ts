@@ -21,9 +21,31 @@ async function bootstrap() {
   // Setup Swagger
   const config = new DocumentBuilder()
     .setTitle('ProcessFlow Pro API')
-    .setDescription('The ProcessFlow Pro workflow management system API')
+    .setDescription('The ProcessFlow Pro workflow management system API for automating payroll and statutory deadline workflows')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
+    .addTag('Authentication', 'User authentication and token management')
+    .addTag('Users', 'User management endpoints')
+    .addTag('Clients', 'Client management endpoints')
+    .addTag('Workflow Templates', 'Template creation and management')
+    .addTag('Workflow Instances', 'Workflow instance lifecycle management')
+    .addTag('Workflow Execution', 'Workflow step execution and tracking')
+    .addTag('Dashboard', 'Dashboard metrics and analytics')
+    .addTag('Notifications', 'User notification management')
+    .addTag('Reporting', 'Report generation and export')
+    .addTag('Deadline Calculator', 'Deadline calculation utilities')
+    .addServer(process.env.API_URL || 'http://localhost:3000', 'Development server')
+    .addServer('https://api.processflowpro.com', 'Production server')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);

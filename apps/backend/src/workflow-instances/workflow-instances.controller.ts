@@ -9,6 +9,7 @@ import {
   Query,
   Patch,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { WorkflowInstancesService } from './workflow-instances.service';
 import { CreateWorkflowInstanceDto, TriggerMonthlyInstancesDto } from './dto/create-workflow-instance.dto';
@@ -19,6 +20,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../database/entities/user.entity';
 import { WorkflowStepStatus } from '../database/entities/workflow-step.entity';
 
+@ApiTags('Workflow Instances')
+@ApiBearerAuth('JWT-auth')
 @Controller('workflow-instances')
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class WorkflowInstancesController {

@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { DashboardService } from './dashboard.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,6 +20,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../database/entities/user.entity';
 
+@ApiTags('Dashboard')
+@ApiBearerAuth('JWT-auth')
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class DashboardController {

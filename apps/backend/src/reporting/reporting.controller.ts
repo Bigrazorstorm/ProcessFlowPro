@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Delete, Body, Param, Query, HttpCode, UseGuards, Request } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ReportingService } from './reporting.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../auth/guards/tenant.guard';
@@ -12,6 +13,8 @@ import {
   ScheduleReportDto,
 } from './dto/report.dto';
 
+@ApiTags('Reporting')
+@ApiBearerAuth('JWT-auth')
 @Controller('reports')
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class ReportingController {

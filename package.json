@@ -14,7 +14,9 @@
     "setup:quick": "pnpm --filter backend setup:quick",
     "seed:demo": "pnpm --filter backend seed:demo",
     "start:prod": "pnpm --filter backend start:prod",
-    "start:prod:seed": "pnpm --filter backend start:prod:seed"
+    "start:prod:seed": "pnpm --filter backend start:prod:seed",
+    "backend": "pnpm --filter backend dev",
+    "frontend": "pnpm --filter frontend dev"
   },
   "devDependencies": {
     "prettier": "^3.0.0",

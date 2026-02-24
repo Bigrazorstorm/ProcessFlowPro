@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { WorkflowExecutionService } from './workflow-execution.service';
 import {
@@ -25,6 +26,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../database/entities/user.entity';
 
+@ApiTags('Workflow Execution')
+@ApiBearerAuth('JWT-auth')
 @Controller('workflow-execution')
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class WorkflowExecutionController {
