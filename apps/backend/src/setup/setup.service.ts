@@ -58,22 +58,27 @@ export class SetupService {
       }
 
       // Create default tenant
-      let tenant = await this.tenantsRepository.findOne({ where: { name: 'Demo Tenant' } });
+      let tenant: Tenant | null = await this.tenantsRepository.findOne({ where: { name: 'Demo Tenant' } });
       if (!tenant) {
-        tenant = this.tenantsRepository.create({
+        const tenantData = {
           name: 'Demo Tenant',
           plan: 'professional',
           settings: {
             timezone: 'Europe/Berlin',
             language: 'de',
           },
-        } as any);
+        };
+        tenant = this.tenantsRepository.create(tenantData as any);
         tenant = await this.tenantsRepository.save(tenant);
+      }
+
+      if (!tenant) {
+        throw new Error('Failed to create tenant');
       }
 
       // Create default admin user
       const hashedPassword = await bcrypt.hash('password', 10);
-      const adminUser = this.usersRepository.create({
+      const adminUserData = {
         email: 'owner@demo.com',
         name: 'Demo Owner',
         passwordHash: hashedPassword,
@@ -81,7 +86,8 @@ export class SetupService {
         tenantId: tenant.id,
         capacityPointsLimit: 100,
         isActive: true,
-      } as any);
+      };
+      const adminUser = this.usersRepository.create(adminUserData as any);
       await this.usersRepository.save(adminUser);
 
       // Create additional demo users
@@ -92,7 +98,7 @@ export class SetupService {
       ];
 
       for (const userData of demoUsers) {
-        const user = this.usersRepository.create({
+        const userData2 = {
           email: userData.email,
           name: userData.name,
           passwordHash: hashedPassword,
@@ -100,7 +106,8 @@ export class SetupService {
           tenantId: tenant.id,
           capacityPointsLimit: 80,
           isActive: true,
-        } as any);
+        };
+        const user = this.usersRepository.create(userData2 as any);
         await this.usersRepository.save(user);
       }
 
