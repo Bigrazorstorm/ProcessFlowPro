@@ -2,6 +2,23 @@
 
 KI-optimierte Workflow-Automatisierung für Lohnabrechnung und Personalabteilungen.
 
+## 🚀 Quick Start (Ein Befehl!)
+
+```bash
+docker-compose up -d
+```
+
+**Das war's!** Das System:
+- ✅ Startet alle Services (PostgreSQL, Redis, MinIO, Backend)
+- ✅ Führt automatisch Datenbank-Migrationen aus
+- ✅ Lädt Demo-Daten (Benutzer, Clients, Templates)
+- ✅ API verfügbar unter http://localhost:3000/api
+- ✅ Swagger Docs: http://localhost:3000/api/docs
+
+**Demo Login:** `owner@demo.com` / `password`
+
+👉 **[Komplette Anleitung: QUICKSTART.md](QUICKSTART.md)**
+
 ## Tech Stack
 
 - **Backend**: NestJS + TypeORM + PostgreSQL
@@ -11,15 +28,28 @@ KI-optimierte Workflow-Automatisierung für Lohnabrechnung und Personalabteilung
 - **File Storage**: S3-compatible (MinIO local, AWS S3 production)
 - **Authentication**: JWT
 
-## Quick Start
+## Detaillierte Installation
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
+- Node.js 20+ and pnpm
 - Docker & Docker Compose
 - Git
 
-### Installation
+### Option 1: Alles mit Docker (Empfohlen)
+
+1. **Clone und Start**
+   ```bash
+   git clone https://github.com/yourusername/processflowpro.git
+   cd ProcessFlowPro
+   docker-compose up -d
+   ```
+
+2. **Fertig!** Kein `pnpm install`, keine Migrationen nötig.
+   - Backend: http://localhost:3000/api
+   - API Docs: http://localhost:3000/api/docs
+
+### Option 2: Lokale Entwicklung
 
 1. **Clone the repository**
    ```bash
@@ -32,13 +62,9 @@ KI-optimierte Workflow-Automatisierung für Lohnabrechnung und Personalabteilung
    pnpm install
    ```
 
-3. **Start infrastructure (PostgreSQL, Redis, MinIO)**
+3. **Start nur Infrastruktur**
    ```bash
-   # Option 1: Nur Infrastruktur (empfohlen für Entwicklung)
-   docker-compose up -d
-   
-   # Option 2: Alles in Docker (Backend + Frontend + Infrastruktur)
-   docker-compose --profile fullstack up -d --build
+   docker-compose up postgres redis minio -d
    ```
 
 4. **Setup environment files**
@@ -47,7 +73,7 @@ KI-optimierte Workflow-Automatisierung für Lohnabrechnung und Personalabteilung
    # Edit .env if needed (defaults work with docker-compose)
    ```
 
-5. **Setup database (migrations + demo data)**
+5. **Setup database & start backend**
    ```bash
    # From root: Run migrations and seed demo data
    pnpm setup

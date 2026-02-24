@@ -21,10 +21,14 @@ RUN pnpm install
 COPY apps/backend ./apps/backend
 COPY packages/shared-types ./packages/shared-types
 
+# Build shared types to ensure they're available
+WORKDIR /app/packages/shared-types
+RUN pnpm run build || true
+
 WORKDIR /app/apps/backend
 
 # Expose API port
 EXPOSE 3000
 
-# Start dev server
-CMD ["pnpm", "run", "dev"]
+# Start with automatic migrations
+CMD ["node", "src/startup-dev.mjs"]
