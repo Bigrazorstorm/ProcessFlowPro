@@ -7,8 +7,12 @@ import Users from './pages/Users';
 import Clients from './pages/Clients';
 import Templates from './pages/Templates';
 import TemplateEditor from './pages/TemplateEditor';
-import { Instances } from './pages/Instances';
+import Workflows from './pages/Workflows';
 import { InstanceDetail } from './pages/InstanceDetail';
+import Calendar from './pages/Calendar';
+import Notifications from './pages/Notifications';
+import Reports from './pages/Reports';
+import { Toaster } from './components/ui/toaster';
 
 function App() {
   return (
@@ -60,7 +64,7 @@ function App() {
             path="/workflows"
             element={
               <ProtectedRoute>
-                <Instances />
+                <Workflows />
               </ProtectedRoute>
             }
           />
@@ -72,10 +76,35 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute>
+                <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </AuthProvider>
   );
 }
