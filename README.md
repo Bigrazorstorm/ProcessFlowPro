@@ -43,10 +43,13 @@ KI-optimierte Workflow-Automatisierung für Lohnabrechnung und Personalabteilung
    # Edit .env if needed (defaults work with docker-compose)
    ```
 
-5. **Run database migrations**
+5. **Setup database (migrations + demo data)**
    ```bash
-   cd apps/backend
-   pnpm db:migration:run
+   # From root: Run migrations and seed demo data
+   pnpm setup
+   
+   # Or: Quick setup with single admin user only
+   pnpm setup:quick
    ```
 
 6. **Start development servers**
@@ -61,6 +64,17 @@ KI-optimierte Workflow-Automatisierung für Lohnabrechnung und Personalabteilung
    # Terminal 2: Frontend
    cd apps/frontend && pnpm run dev
    ```
+
+### Demo Login Credentials
+
+After running `pnpm setup`, you can login with:
+
+- **Owner**: `owner@example.com` / `password123`
+- **Senior**: `senior@example.com` / `password123`
+- **Accountant**: `accountant@example.com` / `password123`
+
+Or with `pnpm setup:quick`:
+- **Admin**: `admin@example.com` / `password123`
 
 ### Access the Application
 
@@ -103,6 +117,9 @@ ProcessFlowPro/
 # Root level commands
 pnpm dev              # Start all apps in development
 pnpm build            # Build all packages
+pnpm setup            # Run migrations + seed demo data
+pnpm setup:quick      # Run migrations + seed admin user only
+pnpm seed:demo        # Seed demo data only
 pnpm lint             # Lint all packages
 pnpm format           # Format all code with Prettier
 pnpm test             # Run all tests
@@ -112,10 +129,15 @@ pnpm test:watch       # Run tests in watch mode
 pnpm run dev                   # Start backend development server
 pnpm run build                 # Build backend
 pnpm run test                  # Run backend tests
+pnpm run setup                 # Run migrations + seed demo data
+pnpm run setup:quick           # Run migrations + seed admin user
 pnpm run db:migration:generate # Generate new migration
 pnpm run db:migration:run      # Run migrations
 pnpm run db:migration:revert   # Revert last migration
-pnpm run seed:demo            # Seed database with demo data
+pnpm run seed:demo             # Seed database with demo data
+pnpm run seed:user             # Seed single admin user
+pnpm run start:prod            # Start production server
+pnpm run start:prod:seed       # Start production with auto-seeding
 
 # Frontend specific (from apps/frontend)
 pnpm run dev           # Start frontend dev server

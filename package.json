@@ -10,7 +10,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "test": "pnpm -r test",
     "test:watch": "pnpm -r test:watch",
-    "seed:demo": "pnpm --filter backend seed:demo"
+    "setup": "pnpm --filter backend setup",
+    "setup:quick": "pnpm --filter backend setup:quick",
+    "seed:demo": "pnpm --filter backend seed:demo",
+    "start:prod": "pnpm --filter backend start:prod",
+    "start:prod:seed": "pnpm --filter backend start:prod:seed"
   },
   "devDependencies": {
     "prettier": "^3.0.0",
