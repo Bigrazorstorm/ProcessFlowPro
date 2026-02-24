@@ -24,6 +24,7 @@ import { WorkflowExecutionModule } from './workflow-execution/workflow-execution
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ReportingModule } from './reporting/reporting.module';
+import { SetupModule } from './setup/setup.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { ReportingModule } from './reporting/reporting.module';
     DashboardModule,
     NotificationsModule,
     ReportingModule,
+    SetupModule,
   ],
   controllers: [],
   providers: [],

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProcessFlow Pro - Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .status-box {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4299e1;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .status-value {
+            color: #2d3748;
+        }
+        .status-value.success {
+            color: #38a169;
+            font-weight: 600;
+        }
+        .status-value.error {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+        .status-value.warning {
+            color: #dd6b20;
+            font-weight: 600;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-box.success {
+            background: #f0fff4;
+            border-left: 4px solid #38a169;
+            display: block;
+        }
+        .result-box.error {
+            background: #fff5f5;
+            border-left: 4px solid #e53e3e;
+            display: block;
+        }
+        .result-box h3 {
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        .credentials {
+            background: #2d3748;
+            color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+        }
+        .credentials div {
+            margin: 8px 0;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading {
+            display: none;
+        }
+        .api-url {
+            background: #edf2f7;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 ProcessFlow Pro Setup</h1>
+        <p class="subtitle">System-Initialisierung und Status-Übersicht</p>
+        
+        <div class="api-url" id="apiUrl">API: Wird geladen...</div>
+        
+        <div class="status-box" id="statusBox">
+            <div class="status-item">
+                <span class="status-label">Datenbankverbindung:</span>
+                <span class="status-value" id="dbStatus">Prüfe...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">System initialisiert:</span>
+                <span class="status-value" id="initStatus">Prüfe...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Tenants:</span>
+                <span class="status-value" id="tenantCount">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Benutzer:</span>
+                <span class="status-value" id="userCount">-</span>
+            </div>
+        </div>
+
+        <button id="setupBtn" onclick="initializeSystem()">
+            System initialisieren
+            <span class="spinner loading" id="spinner"></span>
+        </button>
+
+        <div class="result-box" id="resultBox">
+            <h3 id="resultTitle"></h3>
+            <p id="resultMessage"></p>
+            <div class="credentials" id="credentials" style="display: none;">
+                <div><strong>📧 Email:</strong> <span id="credEmail"></span></div>
+                <div><strong>🔑 Password:</strong> <span id="credPassword"></span></div>
+                <div style="margin-top: 10px; color: #a0aec0;">
+                    ℹ️ Verwenden Sie diese Zugangsdaten zum Einloggen
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        
+        document.getElementById('apiUrl').textContent = 'API: ' + API_BASE;
+
+        async function checkStatus() {
+            try {
+                const response = await fetch(API_BASE + '/setup/status');
+                const data = await response.json();
+                
+                // Update status display
+                document.getElementById('dbStatus').textContent = data.database?.connected ? '✅ Verbunden' : '❌ Nicht verbunden';
+                document.getElementById('dbStatus').className = 'status-value ' + (data.database?.connected ? 'success' : 'error');
+                
+                document.getElementById('initStatus').textContent = data.data?.needsSetup ? '❌ Nicht initialisiert' : '✅ Initialisiert';
+                document.getElementById('initStatus').className = 'status-value ' + (data.data?.needsSetup ? 'error' : 'success');
+                
+                document.getElementById('tenantCount').textContent = data.data?.tenants || '0';
+                document.getElementById('userCount').textContent = data.data?.users || '0';
+                
+                // Enable/disable setup button
+                const setupBtn = document.getElementById('setupBtn');
+                if (data.data?.needsSetup) {
+                    setupBtn.textContent = 'System jetzt initialisieren';
+                    setupBtn.disabled = false;
+                } else {
+                    setupBtn.textContent = '✅ System ist bereits initialisiert';
+                    setupBtn.disabled = true;
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Status check failed:', error);
+                document.getElementById('dbStatus').textContent = '❌ Fehler: ' + error.message;
+                document.getElementById('dbStatus').className = 'status-value error';
+            }
+        }
+
+        async function initializeSystem() {
+            const setupBtn = document.getElementById('setupBtn');
+            const spinner = document.getElementById('spinner');
+            const resultBox = document.getElementById('resultBox');
+            
+            setupBtn.disabled = true;
+            spinner.classList.remove('loading');
+            resultBox.className = 'result-box';
+            
+            try {
+                const response = await fetch(API_BASE + '/setup/initialize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultBox.className = 'result-box success';
+                    document.getElementById('resultTitle').textContent = '✅ Erfolg!';
+                    document.getElementById('resultMessage').textContent = data.message;
+                    
+                    if (data.credentials) {
+                        document.getElementById('credentials').style.display = 'block';
+                        document.getElementById('credEmail').textContent = data.credentials.email;
+                        document.getElementById('credPassword').textContent = data.credentials.password;
+                    }
+                    
+                    // Refresh status
+                    setTimeout(checkStatus, 1000);
+                } else {
+                    resultBox.className = 'result-box error';
+                    document.getElementById('resultTitle').textContent = '⚠️ Hinweis';
+                    document.getElementById('resultMessage').textContent = data.message || 'System ist bereits initialisiert.';
+                }
+            } catch (error) {
+                resultBox.className = 'result-box error';
+                document.getElementById('resultTitle').textContent = '❌ Fehler';
+                document.getElementById('resultMessage').textContent = 'Setup fehlgeschlagen: ' + error.message;
+            } finally {
+                spinner.classList.add('loading');
+                setupBtn.disabled = false;
+            }
+        }
+
+        // Check status on page load
+        checkStatus();
+        
+        // Auto-refresh every 5 seconds
+        setInterval(checkStatus, 5000);
+    </script>
+</body>
+</html>
