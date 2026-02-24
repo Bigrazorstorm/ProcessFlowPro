@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import api from '../api';
+import { api } from '../lib/api';
 
 export enum WorkflowStepType {
   TASK = 'task',

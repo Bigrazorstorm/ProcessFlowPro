@@ -7,6 +7,8 @@ import Users from './pages/Users';
 import Clients from './pages/Clients';
 import Templates from './pages/Templates';
 import TemplateEditor from './pages/TemplateEditor';
+import { Instances } from './pages/Instances';
+import { InstanceDetail } from './pages/InstanceDetail';
 
 function App() {
   return (
@@ -51,6 +53,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <TemplateEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workflows"
+            element={
+              <ProtectedRoute>
+                <Instances />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workflows/:id"
+            element={
+              <ProtectedRoute>
+                <InstanceDetail />
               </ProtectedRoute>
             }
           />
