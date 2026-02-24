@@ -34,7 +34,11 @@ KI-optimierte Workflow-Automatisierung für Lohnabrechnung und Personalabteilung
 
 3. **Start infrastructure (PostgreSQL, Redis, MinIO)**
    ```bash
+   # Option 1: Nur Infrastruktur (empfohlen für Entwicklung)
    docker-compose up -d
+   
+   # Option 2: Alles in Docker (Backend + Frontend + Infrastruktur)
+   docker-compose --profile fullstack up -d --build
    ```
 
 4. **Setup environment files**

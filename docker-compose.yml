@@ -49,6 +49,59 @@ services:
       timeout: 5s
       retries: 5
 
+  # Backend service (optional - can also run locally with pnpm run dev)
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile.dev
+    container_name: processflowpro-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: processflowpro
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY_ID: minioadmin
+      S3_SECRET_ACCESS_KEY: minioadmin
+      JWT_SECRET: dev_jwt_secret
+      JWT_REFRESH_SECRET: dev_refresh_secret
+      NODE_ENV: development
+      API_PORT: 3000
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./apps/backend/src:/app/apps/backend/src
+      - ./packages/shared-types:/app/packages/shared-types
+    profiles:
+      - fullstack
+
+  # Frontend service (optional - can also run locally with pnpm run dev)
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile.dev
+    container_name: processflowpro-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./apps/frontend/src:/app/apps/frontend/src
+      - ./packages/shared-types:/app/packages/shared-types
+    profiles:
+      - fullstack
+
 volumes:
   postgres_data:
   redis_data:
