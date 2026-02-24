@@ -14,13 +14,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Serve static files from public directory
-  app.useStaticAssets(join(__dirname, '..', 'public'), {
-    prefix: '/',
-  });
-
   // Set global prefix
   app.setGlobalPrefix(process.env.API_PREFIX || 'api');
+
+  // Serve static files from public directory (after setting global prefix)
+  app.useStaticAssets(join(__dirname, '..', 'public'));
 
   // Enable validation
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
