@@ -91,14 +91,12 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_URL: http://localhost:3000/api
+      VITE_API_URL: http://10.2.1.45:3000/api
     ports:
       - '5173:5173'
     volumes:
       - ./apps/frontend/src:/app/apps/frontend/src
       - ./packages/shared-types:/app/packages/shared-types
-    profiles:
-      - fullstack
 
 volumes:
   postgres_data:
