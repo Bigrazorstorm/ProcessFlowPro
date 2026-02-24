@@ -91,7 +91,7 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_URL: http://${HOST_IP:-localhost}:3000/api
+      VITE_API_URL: http://localhost:3000/api
     ports:
       - '5173:5173'
     volumes:
