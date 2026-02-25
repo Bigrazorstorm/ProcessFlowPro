@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-sentinel-config
+  namespace: processflowpro
+data:
+  sentinel.conf: |
+    sentinel monitor mymaster redis 6379 2
+    sentinel down-after-milliseconds mymaster 5000
+    sentinel parallel-syncs mymaster 1
+    sentinel failover-timeout mymaster 10000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-sentinel
+  namespace: processflowpro
+  labels:
+    app: redis-sentinel
+spec:
+  selector:
+    app: redis-sentinel
+  ports:
+    - name: sentinel
+      port: 26379
+      targetPort: 26379
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-sentinel
+  namespace: processflowpro
+  labels:
+    app: redis-sentinel
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: redis-sentinel
+    spec:
+      containers:
+        - name: redis-sentinel
+          image: redis:7-alpine
+          command:
+            - sh
+            - -c
+            - |
+              cp /config/sentinel.conf /tmp/sentinel.conf
+              echo "sentinel auth-pass mymaster $REDIS_PASSWORD" >> /tmp/sentinel.conf
+              redis-sentinel /tmp/sentinel.conf
+          ports:
+            - containerPort: 26379
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: processflowpro-secret
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: sentinel-config
+              mountPath: /config
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "-p", "26379", "ping"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "-p", "26379", "ping"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: sentinel-config
+          configMap:
+            name: redis-sentinel-config
