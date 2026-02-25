@@ -8,6 +8,7 @@ yarn.lock
 dist/
 build/
 *.d.ts
+!apps/frontend/src/vite-env.d.ts
 
 # Environment
 .env
