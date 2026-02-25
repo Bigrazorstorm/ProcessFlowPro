@@ -187,11 +187,11 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - [x] Email-Integration (SMTP/nodemailer)
 - [x] Automatische Erinnerungen (täglicher Cron-Job, 3-Tage-Vorwarnung)
 - [x] Eskalations-Management (täglicher Cron-Job für überfällige Aufgaben)
-- [ ] Workflow-Trigger (Events)
+- [x] Workflow-Trigger (Events): Regelbasiertes Event-System (step.completed, step.started, step.overdue, workflow.completed) mit konfigurierbaren Aktionen (Benachrichtigung, E-Mail); Frontend-Verwaltungsseite
 
 ### 3.2 Collaboration
 - [x] Echtzeit-Updates (WebSockets via socket.io)
-- [ ] Teamkalender
+- [x] Teamkalender (Wochenansicht aller Teammitglieder mit Aufgaben & Workload-Karten)
 - [ ] Chat-Integration
 - [ ] Dokumenten-Sharing
 
@@ -282,8 +282,8 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - ✅ Frontend Erweiterte Features: 100% (Kalender inkl. Multi-User-Ansicht & Drag & Drop, Benachrichtigungen, Reporting inkl. automatisierte Reports)
 - ✅ Testing: 100% (Backend Unit-Tests: AuthService, UsersService, ClientsService, WorkflowTemplatesService, NotificationsService, DeadlineCalculatorService, DashboardService, WorkflowInstancesService, WorkflowExecutionService, ReportingService, Guards, TenantContextService (221 Tests total, Coverage 85.78%); Frontend Component-Tests: Button, Login, Dashboard, ProtectedRoute; Frontend E2E-Tests: Playwright – Login-Flow, Auth-Protection, Navigation (19 Tests))
 - ✅ Production: 100% (Kubernetes, CI/CD, Monitoring, Backup, ELK Logging, Skalierung, DSGVO/GoBD-Compliance, Dokumentation)
-- 🚧 Phase 3.1: Email-Integration ✅, Automatische Erinnerungen ✅, Eskalations-Management ✅, Workflow-Trigger [ ]
-- 🚧 Phase 3.2: Echtzeit-Updates (WebSockets) ✅, Teamkalender [ ]
+- ✅ Phase 3.1: Email-Integration ✅, Automatische Erinnerungen ✅, Eskalations-Management ✅, Workflow-Trigger ✅
+- ✅ Phase 3.2: Echtzeit-Updates (WebSockets) ✅, Teamkalender ✅
 
 **Nächste Schritte (Phase 3 & Qualitätssicherung):**
 1. Phase 3.1: Workflow-Trigger (Events)

@@ -7,11 +7,13 @@ import { User } from '../database/entities/user.entity';
 import { WorkflowExecutionService } from './workflow-execution.service';
 import { WorkflowExecutionController } from './workflow-execution.controller';
 import { AuthModule } from '../auth/auth.module';
+import { WorkflowTriggersModule } from '../workflow-triggers/workflow-triggers.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([WorkflowStep, StepComment, WorkflowInstance, User]),
     AuthModule,
+    WorkflowTriggersModule,
   ],
   controllers: [WorkflowExecutionController],
   providers: [WorkflowExecutionService],

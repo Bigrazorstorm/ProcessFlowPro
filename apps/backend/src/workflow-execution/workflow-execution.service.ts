@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Optional,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -25,6 +26,8 @@ import {
   StepCommentResponseDto,
   WorkflowProgressResponseDto,
 } from './dto/step-execution-response.dto';
+import { WorkflowTriggersService } from '../workflow-triggers/workflow-triggers.service';
+import { TriggerEvent } from '../workflow-triggers/dto/workflow-trigger.dto';
 
 @Injectable()
 export class WorkflowExecutionService {
@@ -37,6 +40,7 @@ export class WorkflowExecutionService {
     private readonly instancesRepository: Repository<WorkflowInstance>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @Optional() private readonly triggersService?: WorkflowTriggersService,
   ) {}
 
   /**
@@ -91,6 +95,25 @@ export class WorkflowExecutionService {
       comment.userId = userId as any;
       comment.content = `Status changed to ${dto.status}: ${dto.reason}`;
       await this.commentsRepository.save(comment);
+    }
+
+    // Fire workflow triggers based on new status
+    if (this.triggersService) {
+      const triggerEvent =
+        dto.status === WorkflowStepStatus.DONE
+          ? TriggerEvent.STEP_COMPLETED
+          : dto.status === WorkflowStepStatus.IN_PROGRESS
+            ? TriggerEvent.STEP_STARTED
+            : undefined;
+
+      if (triggerEvent) {
+        void this.triggersService.fire(triggerEvent, {
+          tenantId,
+          userId,
+          stepId,
+          instanceId: step.instanceId,
+        });
+      }
     }
 
     const fullStep = await this.stepsRepository.findOne({
@@ -168,6 +191,14 @@ export class WorkflowExecutionService {
     }
 
     const updatedStep = await this.stepsRepository.save(step);
+
+    // Fire step.started trigger
+    void this.triggersService?.fire(TriggerEvent.STEP_STARTED, {
+      tenantId,
+      userId,
+      stepId,
+      instanceId: step.instanceId,
+    });
 
     const fullStep = await this.stepsRepository.findOne({
       where: { id: stepId },
@@ -294,6 +325,14 @@ export class WorkflowExecutionService {
     approvalComment.userId = userId as any;
     approvalComment.content = `Step approved${dto.notes ? ` - ${dto.notes}` : ''}`;
     await this.commentsRepository.save(approvalComment);
+
+    // Fire step.completed trigger
+    void this.triggersService?.fire(TriggerEvent.STEP_COMPLETED, {
+      tenantId,
+      userId,
+      stepId,
+      instanceId: step.instanceId,
+    });
 
     const fullStep = await this.stepsRepository.findOne({
       where: { id: stepId },
