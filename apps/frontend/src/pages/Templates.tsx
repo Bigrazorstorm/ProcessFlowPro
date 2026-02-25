@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Search, MoreHorizontal, FileText, Copy, Edit2, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import {
@@ -20,54 +21,90 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-
-interface Template {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  stepsCount: number;
-  updatedAt: string;
-}
+import {
+  useTemplates,
+  WorkflowTemplate,
+  CreateTemplateDto,
+  UpdateTemplateDto,
+} from '../hooks/useTemplates';
+import TemplateModal from '../components/TemplateModal';
 
 export default function Templates() {
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const navigate = useNavigate();
+  const { templates, loading, error, createTemplate, updateTemplate, deleteTemplate } =
+    useTemplates();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<WorkflowTemplate | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-  useEffect(() => {
-    // TODO: Fetch from API
-    setTemplates([
-      {
-        id: '1',
-        name: 'Jahresabschluss Standard',
-        description: 'Standard-Workflow für den Jahresabschluss von Kapitalgesellschaften.',
-        category: 'Jahresabschluss',
-        stepsCount: 15,
-        updatedAt: '2024-02-15',
-      },
-      {
-        id: '2',
-        name: 'Einkommensteuer',
-        description: 'Workflow für die private Einkommensteuererklärung.',
-        category: 'Steuern',
-        stepsCount: 8,
-        updatedAt: '2024-03-01',
-      },
-      {
-        id: '3',
-        name: 'Lohnabrechnung Monatlich',
-        description: 'Wiederkehrender Workflow für die monatliche Lohnabrechnung.',
-        category: 'Lohn',
-        stepsCount: 5,
-        updatedAt: '2024-01-20',
-      },
-    ]);
-  }, []);
-
-  const filteredTemplates = templates.filter(template => 
-    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTemplates = templates.filter(
+    (template) =>
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (template.industry || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleCreate = () => {
+    setSelectedTemplate(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (template: WorkflowTemplate) => {
+    setSelectedTemplate(template);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (data: CreateTemplateDto | UpdateTemplateDto) => {
+    if (selectedTemplate) {
+      await updateTemplate(selectedTemplate.id, data as UpdateTemplateDto);
+    } else {
+      const created = await createTemplate(data as CreateTemplateDto);
+      // Navigate to editor after creating
+      navigate(`/templates/${created.id}`);
+      return;
+    }
+  };
+
+  const handleDuplicate = async (template: WorkflowTemplate) => {
+    try {
+      await createTemplate({
+        name: `${template.name} (Kopie)`,
+        industry: template.industry,
+        description: template.description,
+      });
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (deleteConfirm !== id) {
+      setDeleteConfirm(id);
+      return;
+    }
+    try {
+      await deleteTemplate(id);
+      setDeleteConfirm(null);
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -75,10 +112,10 @@ export default function Templates() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Workflow Templates</h1>
           <p className="text-muted-foreground mt-1">
-            Erstellen und verwalten Sie Vorlagen für wiederkehrende Prozesse.
+            Erstellen und verwalten Sie Vorlagen fÃ¼r wiederkehrende Prozesse.
           </p>
         </div>
-        <Button>
+        <Button onClick={handleCreate}>
           <Plus className="w-4 h-4 mr-2" />
           Neues Template
         </Button>
@@ -87,7 +124,12 @@ export default function Templates() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle>Alle Templates</CardTitle>
+            <CardTitle>
+              Alle Templates{' '}
+              <span className="text-muted-foreground font-normal text-base">
+                ({filteredTemplates.length})
+              </span>
+            </CardTitle>
             <div className="relative w-64">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -106,8 +148,9 @@ export default function Templates() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Kategorie</TableHead>
+                  <TableHead>Branche</TableHead>
                   <TableHead>Schritte</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Zuletzt aktualisiert</TableHead>
                   <TableHead className="text-right">Aktionen</TableHead>
                 </TableRow>
@@ -115,7 +158,7 @@ export default function Templates() {
               <TableBody>
                 {filteredTemplates.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                       Keine Templates gefunden.
                     </TableCell>
                   </TableRow>
@@ -128,19 +171,32 @@ export default function Templates() {
                             <FileText className="w-4 h-4 text-muted-foreground" />
                             {template.name}
                           </div>
-                          <span className="text-sm text-muted-foreground line-clamp-1">
-                            {template.description}
-                          </span>
+                          {template.description && (
+                            <span className="text-sm text-muted-foreground line-clamp-1">
+                              {template.description}
+                            </span>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{template.category}</Badge>
+                        {template.industry ? (
+                          <Badge variant="outline">{template.industry}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground">â€“</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2 text-muted-foreground">
-                          <span className="font-medium text-foreground">{template.stepsCount}</span>
+                          <span className="font-medium text-foreground">
+                            {template.steps?.length ?? 0}
+                          </span>
                           <span className="text-sm">Schritte</span>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={template.isActive ? 'default' : 'secondary'}>
+                          {template.isActive ? 'Aktiv' : 'Inaktiv'}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(template.updatedAt).toLocaleDateString('de-DE')}
@@ -149,24 +205,33 @@ export default function Templates() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Menü öffnen</span>
+                              <span className="sr-only">MenÃ¼ Ã¶ffnen</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Aktionen</DropdownMenuLabel>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => navigate(`/templates/${template.id}`)}
+                            >
                               <Edit2 className="w-4 h-4 mr-2" />
-                              Bearbeiten
+                              Steps bearbeiten
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleEdit(template)}>
+                              <Edit2 className="w-4 h-4 mr-2" />
+                              Grunddaten bearbeiten
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDuplicate(template)}>
                               <Copy className="w-4 h-4 mr-2" />
                               Duplizieren
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDelete(template.id)}
+                            >
                               <Trash2 className="w-4 h-4 mr-2" />
-                              Löschen
+                              {deleteConfirm === template.id ? 'BestÃ¤tigen?' : 'LÃ¶schen'}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -179,6 +244,16 @@ export default function Templates() {
           </div>
         </CardContent>
       </Card>
+
+      <TemplateModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedTemplate(null);
+        }}
+        onSave={handleSave}
+        template={selectedTemplate}
+      />
     </div>
   );
 }
