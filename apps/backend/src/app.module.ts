@@ -25,6 +25,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ReportingModule } from './reporting/reporting.module';
 import { SetupModule } from './setup/setup.module';
+import { LoggerModule } from './common/logger';
+import { ComplianceModule } from './compliance/compliance.module';
 
 @Module({
   imports: [
@@ -68,6 +70,8 @@ import { SetupModule } from './setup/setup.module';
     NotificationsModule,
     ReportingModule,
     SetupModule,
+    LoggerModule,
+    ComplianceModule,
   ],
   controllers: [],
   providers: [],
