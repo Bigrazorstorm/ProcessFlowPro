@@ -158,24 +158,28 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - Kommentar-Funktion
 - Filter & Gruppierung (nach Status, Monat, Mandant)
 
-### 2.9 Kalender-Ansicht 📋 TODO
-- [ ] Monatsansicht mit Deadline-Markern
-- [ ] Tagesdetails mit allen Fristen
+### 2.9 Kalender-Ansicht ✅
+- [x] Monatsansicht mit Deadline-Markern
+- [x] Tagesdetails mit allen Fristen
+- [x] Farbcodierung nach Status (Offen, In Bearbeitung, Erledigt)
+- [x] Klick-Navigation zu Workflow-Instanzen
+- [x] Anstehende-Fristen-Sidebar mit echten Daten
 - [ ] Drag & Drop für Verschiebungen
-- [ ] Farbcodierung nach Priorität/Status
 - [ ] Multi-User-Ansicht
 
-### 2.10 Benachrichtigungen 📋 TODO
-- [ ] Notification-Center im Header
-- [ ] Toast-Notifications
-- [ ] Benachrichtigungs-Liste
-- [ ] Als gelesen markieren
-- [ ] Filter nach Typ & Priorität
+### 2.10 Benachrichtigungen ✅
+- [x] Notification-Center im Header (Dropdown mit Badge)
+- [x] Toast-Notifications (via useToast)
+- [x] Benachrichtigungs-Liste mit Ladezustand
+- [x] Als gelesen markieren (einzeln + alle)
+- [x] Filter nach Typ & Lese-Status
+- [x] Löschen-Funktion
 
-### 2.11 Reporting 📋 TODO
-- [ ] Report-Konfigurator
-- [ ] Vorschau-Funktion
-- [ ] Export (PDF, Excel, CSV)
+### 2.11 Reporting ✅
+- [x] Report-Konfigurator mit 5 Berichtstypen
+- [x] Vorschau-Funktion (Zusammenfassung + JSON-Rohdaten)
+- [x] Export (JSON, CSV, PDF via Backend)
+- [x] Live-Statistiken vom Backend auf der Übersichtsseite
 - [ ] Gespeicherte Reports
 - [ ] Automatisierte Reports
 
@@ -272,20 +276,20 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ## 📊 Aktueller Status
 
-**Gesamtfortschritt: ~65%**
+**Gesamtfortschritt: ~80%**
 - ✅ Backend: 100% (Phase 1 komplett)
 - ✅ Frontend Grundstruktur: 100% (2.1–2.3)
 - ✅ Frontend Core-Features: 100% (2.4–2.8 komplett)
-- 🚧 Frontend Erweiterte Features: 20% (Kalender-Ansicht, Reporting)
+- ✅ Frontend Erweiterte Features: 90% (2.9 Kalender, 2.10 Benachrichtigungen, 2.11 Reporting)
 - 📋 Erweiterte Features: 0%
 - 📋 Testing: 0%
 - 📋 Production: 0%
 
 **Nächste Schritte:**
-1. Kalender-Ansicht mit echten Deadline-Daten (2.9)
-2. Benachrichtigungen-Center im Header (2.10)
-3. Report-Konfigurator mit Export-Funktionen (2.11)
-4. Backend-Tests und Frontend-Tests (Phase 4)
+1. Backend-Tests und Frontend-Tests (Phase 4)
+2. Drag & Drop für Kalender-Verschiebungen (2.9)
+3. Automatisierte Reports / gespeicherte Reports (2.11)
+4. Email-Integration & Echtzeit-Updates (Phase 3)
 
 ---
 

@@ -1,10 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
-  Patch,
-  Param,
-  Body,
   UseGuards,
   Req,
   DefaultValuePipe,
@@ -37,6 +33,42 @@ export class DashboardController {
   ) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getTenantDashboard(tenantId);
+  }
+
+  /**
+   * Get stats in the format expected by the frontend
+   */
+  @Get('stats')
+  async getStats(
+    @Req() req: Request,
+  ) {
+    const tenantId = (req as any).user.tenantId;
+    return this.dashboardService.getStats(tenantId);
+  }
+
+  /**
+   * Get upcoming deadlines
+   */
+  @Get('upcoming-deadlines')
+  async getUpcomingDeadlines(
+    @Req() req: Request,
+    @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
+  ) {
+    const tenantId = (req as any).user.tenantId;
+    return this.dashboardService.getUpcomingDeadlines(tenantId, days);
+  }
+
+  /**
+   * Get calendar deadlines for a specific month
+   */
+  @Get('calendar')
+  async getCalendarDeadlines(
+    @Req() req: Request,
+    @Query('year', new DefaultValuePipe(new Date().getFullYear()), ParseIntPipe) year: number,
+    @Query('month', new DefaultValuePipe(new Date().getMonth() + 1), ParseIntPipe) month: number,
+  ) {
+    const tenantId = (req as any).user.tenantId;
+    return this.dashboardService.getCalendarDeadlines(tenantId, year, month);
   }
 
   /**
