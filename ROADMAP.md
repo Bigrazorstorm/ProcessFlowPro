@@ -220,11 +220,13 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - [x] Unit-Tests (Jest)
 - [x] Integration-Tests (E2E: Auth, Users, Clients, Templates, Dashboard)
 - [x] E2E-Tests (Supertest – Notifications, Workflow-Instanzen)
+- [x] Unit-Tests für ClientsService & WorkflowTemplatesService (105 Tests total)
 - [ ] Test-Coverage >80%
 
 ### 4.2 Frontend-Tests
 - [x] Component-Tests (Vitest + React Testing Library)
-- [ ] Integration-Tests
+- [x] Dashboard-Komponenten-Test (useDashboard-Integration)
+- [x] ProtectedRoute-Komponenten-Test (Auth-Flow)
 - [ ] E2E-Tests (Playwright/Cypress)
 
 ### 4.3 Performance
@@ -272,17 +274,17 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ## 📊 Aktueller Status
 
-**Gesamtfortschritt: ~95%**
+**Gesamtfortschritt: ~97%**
 - ✅ Backend: 100% (Phase 1 komplett)
 - ✅ Frontend Grundstruktur: 100% (2.1–2.3)
 - ✅ Frontend Core-Features: 100% (2.4–2.8 komplett)
 - ✅ Frontend Erweiterte Features: 100% (Kalender inkl. Multi-User-Ansicht & Drag & Drop, Benachrichtigungen, Reporting inkl. automatisierte Reports)
-- 🔄 Testing: 65% (Backend Unit-Tests + E2E-Tests für Auth, Users, Clients, Templates, Dashboard, Notifications, Workflow-Instanzen; Frontend Component-Tests mit Vitest + React Testing Library)
+- 🔄 Testing: 80% (Backend Unit-Tests: AuthService, UsersService, ClientsService, WorkflowTemplatesService, NotificationsService, DeadlineCalculatorService + E2E-Tests; Frontend Component-Tests: Button, Login, Dashboard, ProtectedRoute)
 - 📋 Production: 0%
 
 **Nächste Schritte:**
-1. Test-Coverage auf >80% erhöhen (Phase 4.1)
-2. Frontend Integration-Tests und E2E-Tests (Phase 4.2)
+1. Test-Coverage auf >80% bringen – Coverage-Report generieren und Lücken schließen (Phase 4.1)
+2. E2E-Tests für Frontend mit Playwright/Cypress (Phase 4.2)
 3. Production-Infrastruktur (Phase 5)
 
 ---
