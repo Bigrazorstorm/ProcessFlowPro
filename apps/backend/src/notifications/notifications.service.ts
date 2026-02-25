@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -7,6 +7,7 @@ import {
   UpdateNotificationPreferencesDto,
   NotificationPreferencesDto,
 } from './dto/notification.dto';
+import { EventsGateway } from '../websockets/events.gateway';
 
 export interface Notification {
   id: string;
@@ -38,6 +39,10 @@ export class NotificationsService {
   private notifications: Map<string, Notification[]> = new Map();
   private preferences: Map<string, NotificationPreference> = new Map();
 
+  constructor(
+    @Optional() private readonly eventsGateway?: EventsGateway,
+  ) {}
+
   /**
    * Create a notification
    */
@@ -60,6 +65,16 @@ export class NotificationsService {
     }
 
     this.notifications.get(dto.userId)!.push(notification);
+
+    // Emit real-time WebSocket event
+    this.eventsGateway?.emitNotification(dto.userId, {
+      type: notification.type,
+      title: notification.title,
+      message: notification.message,
+      relatedItemId: notification.relatedItemId,
+      createdAt: notification.createdAt,
+    });
+
     return notification;
   }
 

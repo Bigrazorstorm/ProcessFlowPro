@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
+import { ScheduleModule } from '@nestjs/schedule';
 import {
   Tenant,
   User,
@@ -27,6 +28,9 @@ import { ReportingModule } from './reporting/reporting.module';
 import { SetupModule } from './setup/setup.module';
 import { LoggerModule } from './common/logger';
 import { ComplianceModule } from './compliance/compliance.module';
+import { EmailModule } from './email/email.module';
+import { RemindersModule } from './reminders/reminders.module';
+import { WebsocketsModule } from './websockets/websockets.module';
 
 @Module({
   imports: [
@@ -34,6 +38,7 @@ import { ComplianceModule } from './compliance/compliance.module';
       isGlobal: true,
       envFilePath: ['.env', '.env.example'],
     }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -72,6 +77,9 @@ import { ComplianceModule } from './compliance/compliance.module';
     SetupModule,
     LoggerModule,
     ComplianceModule,
+    EmailModule,
+    RemindersModule,
+    WebsocketsModule,
   ],
   controllers: [],
   providers: [],

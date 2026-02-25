@@ -184,13 +184,13 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 ## 🔮 Phase 3: Erweiterte Features (GEPLANT)
 
 ### 3.1 Erweiterte Automatisierung
-- [ ] Email-Integration (SMTP/IMAP)
-- [ ] Automatische Erinnerungen
-- [ ] Eskalations-Management
+- [x] Email-Integration (SMTP/nodemailer)
+- [x] Automatische Erinnerungen (täglicher Cron-Job, 3-Tage-Vorwarnung)
+- [x] Eskalations-Management (täglicher Cron-Job für überfällige Aufgaben)
 - [ ] Workflow-Trigger (Events)
 
 ### 3.2 Collaboration
-- [ ] Echtzeit-Updates (WebSockets)
+- [x] Echtzeit-Updates (WebSockets via socket.io)
 - [ ] Teamkalender
 - [ ] Chat-Integration
 - [ ] Dokumenten-Sharing
@@ -282,10 +282,12 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - ✅ Frontend Erweiterte Features: 100% (Kalender inkl. Multi-User-Ansicht & Drag & Drop, Benachrichtigungen, Reporting inkl. automatisierte Reports)
 - ✅ Testing: 100% (Backend Unit-Tests: AuthService, UsersService, ClientsService, WorkflowTemplatesService, NotificationsService, DeadlineCalculatorService, DashboardService, WorkflowInstancesService, WorkflowExecutionService, ReportingService, Guards, TenantContextService (221 Tests total, Coverage 85.78%); Frontend Component-Tests: Button, Login, Dashboard, ProtectedRoute; Frontend E2E-Tests: Playwright – Login-Flow, Auth-Protection, Navigation (19 Tests))
 - ✅ Production: 100% (Kubernetes, CI/CD, Monitoring, Backup, ELK Logging, Skalierung, DSGVO/GoBD-Compliance, Dokumentation)
+- 🚧 Phase 3.1: Email-Integration ✅, Automatische Erinnerungen ✅, Eskalations-Management ✅, Workflow-Trigger [ ]
+- 🚧 Phase 3.2: Echtzeit-Updates (WebSockets) ✅, Teamkalender [ ]
 
 **Nächste Schritte (Phase 3 & Qualitätssicherung):**
-1. Phase 3.1: E-Mail-Integration (SMTP/IMAP), Automatische Erinnerungen
-2. Phase 3.2: Echtzeit-Updates (WebSockets), Teamkalender
+1. Phase 3.1: Workflow-Trigger (Events)
+2. Phase 3.2: Teamkalender
 3. Phase 3.4: Mobile App (React Native)
 4. Phase 4.3: Load-Tests (k6), Performance-Monitoring
 5. Phase 4.4: Penetration-Tests, OWASP-Compliance

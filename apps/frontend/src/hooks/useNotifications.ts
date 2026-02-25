@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../lib/api';
+import { useWebSocket } from './useWebSocket';
+import { useAuth } from '../contexts/AuthContext';
 
 export enum NotificationType {
   STEP_ASSIGNED = 'STEP_ASSIGNED',
@@ -38,6 +40,7 @@ export interface NotificationPreferences {
 }
 
 export function useNotifications() {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -83,6 +86,12 @@ export function useNotifications() {
     loadPreferences();
     loadUnreadCount();
   }, [loadNotifications, loadPreferences, loadUnreadCount]);
+
+  // Real-time WebSocket: reload notifications when a new one arrives
+  useWebSocket(user?.id, () => {
+    loadNotifications();
+    loadUnreadCount();
+  });
 
   const markAsRead = async (notificationId: string): Promise<void> => {
     try {
