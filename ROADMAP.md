@@ -161,7 +161,7 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 ### 2.9 Kalender-Ansicht ✅
 - [x] Monatsansicht mit Deadline-Markern
 - [x] Tagesdetails mit allen Fristen
-- [ ] Drag & Drop für Verschiebungen
+- [x] Drag & Drop für Verschiebungen
 - [x] Farbcodierung nach Priorität/Status
 - [ ] Multi-User-Ansicht
 
@@ -176,7 +176,7 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - [x] Report-Konfigurator
 - [x] Vorschau-Funktion (Live-Diagramme)
 - [x] Export (PDF, Excel, CSV)
-- [ ] Gespeicherte Reports
+- [x] Gespeicherte Reports
 - [ ] Automatisierte Reports
 
 ---
@@ -217,7 +217,7 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 ## 🧪 Phase 4: Testing & Quality (GEPLANT)
 
 ### 4.1 Backend-Tests
-- [ ] Unit-Tests (Jest)
+- [x] Unit-Tests (Jest)
 - [ ] Integration-Tests
 - [ ] E2E-Tests (Supertest)
 - [ ] Test-Coverage >80%
@@ -272,20 +272,19 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ## 📊 Aktueller Status
 
-**Gesamtfortschritt: ~80%**
+**Gesamtfortschritt: ~85%**
 - ✅ Backend: 100% (Phase 1 komplett)
 - ✅ Frontend Grundstruktur: 100% (2.1–2.3)
 - ✅ Frontend Core-Features: 100% (2.4–2.8 komplett)
-- ✅ Frontend Erweiterte Features: 80% (Kalender, Benachrichtigungen, Reporting implementiert)
-- 📋 Erweiterte Features: 0%
-- 📋 Testing: 0%
+- ✅ Frontend Erweiterte Features: 95% (Kalender inkl. Drag & Drop, Benachrichtigungen, Reporting inkl. gespeicherte Reports)
+- 🔄 Testing: 15% (Backend Unit-Tests für Auth, Users, Notifications, DeadlineCalculator)
 - 📋 Production: 0%
 
 **Nächste Schritte:**
-1. Backend-Tests (Phase 4.1)
+1. Backend Integration-Tests & E2E-Tests (Phase 4.1)
 2. Frontend-Tests (Phase 4.2)
-3. Drag & Drop im Kalender
-4. Gespeicherte Reports & Automatisierung
+3. Multi-User-Ansicht im Kalender
+4. Automatisierte Reports (Phase 2.11)
 
 ---
 

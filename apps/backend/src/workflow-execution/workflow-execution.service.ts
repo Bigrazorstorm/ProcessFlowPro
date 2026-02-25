@@ -18,6 +18,7 @@ import {
   EstimationDto,
   ApproveStepDto,
   RejectStepDto,
+  ShiftStepDateDto,
 } from './dto/step-execution.dto';
 import {
   StepExecutionResponseDto,
@@ -371,6 +372,39 @@ export class WorkflowExecutionService {
 
     const saved = await this.commentsRepository.save(comment);
     return this.commentToResponseDto(saved);
+  }
+
+  /**
+   * Shift the due date of a step (for drag & drop calendar rescheduling)
+   */
+  async shiftStepDate(
+    stepId: string,
+    tenantId: string,
+    dto: ShiftStepDateDto,
+  ): Promise<StepExecutionResponseDto> {
+    const step = await this.stepsRepository.findOne({
+      where: { id: stepId },
+      relations: ['instance'],
+    });
+
+    if (!step || step.instance.tenantId !== tenantId) {
+      throw new NotFoundException('Step not found');
+    }
+
+    if (step.status === WorkflowStepStatus.DONE || step.status === WorkflowStepStatus.SKIPPED) {
+      throw new BadRequestException('Cannot shift the date of a completed or skipped step');
+    }
+
+    step.dueDate = new Date(dto.newDueDate);
+    step.status = WorkflowStepStatus.SHIFTED;
+    await this.stepsRepository.save(step);
+
+    const fullStep = await this.stepsRepository.findOne({
+      where: { id: stepId },
+      relations: ['instance', 'comments'],
+    });
+
+    return this.toResponseDto(fullStep!);
   }
 
   /**
