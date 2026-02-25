@@ -18,7 +18,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useTemplates, WorkflowTemplate, TemplateStep, CreateStepDto, UpdateStepDto } from '../hooks/useTemplates';
-import { api } from '../lib/api';
 import StepModal from '../components/StepModal';
 
 interface SortableStepProps {

@@ -163,17 +163,17 @@ export function InstanceDetail() {
     }
   };
 
-  const handleSkipStep = async (stepId: string) => {
-    const reason = prompt('Grund für das Überspringen:');
-    if (!reason) return;
-    
-    try {
-      await updateStepStatus(stepId, WorkflowStepStatus.SKIPPED, reason);
-      await loadData();
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
+  // const handleSkipStep = async (stepId: string) => {
+  //   const reason = prompt('Grund für das Überspringen:');
+  //   if (!reason) return;
+  //   
+  //   try {
+  //     await updateStepStatus(stepId, WorkflowStepStatus.SKIPPED, reason);
+  //     await loadData();
+  //   } catch (err: any) {
+  //     alert(err.message);
+  //   }
+  // };
 
   const handleShiftStep = async (stepId: string) => {
     // Shift to next month - using SHIFTED status

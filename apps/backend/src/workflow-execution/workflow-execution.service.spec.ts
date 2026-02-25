@@ -74,23 +74,33 @@ const makeUsersRepo = () => ({
   findOne: jest.fn(),
 });
 
+const makeAttachmentsRepo = () => ({
+  findOne: jest.fn(),
+  create: jest.fn(),
+  save: jest.fn(),
+  find: jest.fn(),
+});
+
 describe('WorkflowExecutionService', () => {
   let service: WorkflowExecutionService;
   let stepsRepo: ReturnType<typeof makeStepsRepo>;
   let commentsRepo: ReturnType<typeof makeCommentsRepo>;
   let instancesRepo: ReturnType<typeof makeInstancesRepo>;
   let usersRepo: ReturnType<typeof makeUsersRepo>;
+  let attachmentsRepo: ReturnType<typeof makeAttachmentsRepo>;
 
   beforeEach(() => {
     stepsRepo = makeStepsRepo();
     commentsRepo = makeCommentsRepo();
     instancesRepo = makeInstancesRepo();
     usersRepo = makeUsersRepo();
+    attachmentsRepo = makeAttachmentsRepo();
     service = new WorkflowExecutionService(
       stepsRepo as any,
       commentsRepo as any,
       instancesRepo as any,
       usersRepo as any,
+      attachmentsRepo as any,
     );
   });
 
