@@ -158,24 +158,24 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - Kommentar-Funktion
 - Filter & Gruppierung (nach Status, Monat, Mandant)
 
-### 2.9 Kalender-Ansicht 📋 TODO
-- [ ] Monatsansicht mit Deadline-Markern
-- [ ] Tagesdetails mit allen Fristen
+### 2.9 Kalender-Ansicht ✅
+- [x] Monatsansicht mit Deadline-Markern
+- [x] Tagesdetails mit allen Fristen
 - [ ] Drag & Drop für Verschiebungen
-- [ ] Farbcodierung nach Priorität/Status
+- [x] Farbcodierung nach Priorität/Status
 - [ ] Multi-User-Ansicht
 
-### 2.10 Benachrichtigungen 📋 TODO
-- [ ] Notification-Center im Header
-- [ ] Toast-Notifications
-- [ ] Benachrichtigungs-Liste
-- [ ] Als gelesen markieren
-- [ ] Filter nach Typ & Priorität
+### 2.10 Benachrichtigungen ✅
+- [x] Notification-Center im Header
+- [x] Toast-Notifications
+- [x] Benachrichtigungs-Liste
+- [x] Als gelesen markieren
+- [x] Filter nach Typ & Priorität
 
-### 2.11 Reporting 📋 TODO
-- [ ] Report-Konfigurator
-- [ ] Vorschau-Funktion
-- [ ] Export (PDF, Excel, CSV)
+### 2.11 Reporting ✅
+- [x] Report-Konfigurator
+- [x] Vorschau-Funktion (Live-Diagramme)
+- [x] Export (PDF, Excel, CSV)
 - [ ] Gespeicherte Reports
 - [ ] Automatisierte Reports
 
@@ -272,20 +272,20 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ## 📊 Aktueller Status
 
-**Gesamtfortschritt: ~65%**
+**Gesamtfortschritt: ~80%**
 - ✅ Backend: 100% (Phase 1 komplett)
 - ✅ Frontend Grundstruktur: 100% (2.1–2.3)
 - ✅ Frontend Core-Features: 100% (2.4–2.8 komplett)
-- 🚧 Frontend Erweiterte Features: 20% (Kalender-Ansicht, Reporting)
+- ✅ Frontend Erweiterte Features: 80% (Kalender, Benachrichtigungen, Reporting implementiert)
 - 📋 Erweiterte Features: 0%
 - 📋 Testing: 0%
 - 📋 Production: 0%
 
 **Nächste Schritte:**
-1. Kalender-Ansicht mit echten Deadline-Daten (2.9)
-2. Benachrichtigungen-Center im Header (2.10)
-3. Report-Konfigurator mit Export-Funktionen (2.11)
-4. Backend-Tests und Frontend-Tests (Phase 4)
+1. Backend-Tests (Phase 4.1)
+2. Frontend-Tests (Phase 4.2)
+3. Drag & Drop im Kalender
+4. Gespeicherte Reports & Automatisierung
 
 ---
 

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../hooks/useNotifications';
 import { 
   LayoutDashboard, 
   Users, 
@@ -11,11 +12,24 @@ import {
   Bell, 
   BarChart3,
   LogOut,
-  Settings
+  Settings,
+  Check,
+  Info,
+  AlertTriangle,
+  CheckCircle2,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { Badge } from './ui/badge';
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,6 +38,20 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+
+  const recentNotifications = notifications.slice(0, 5);
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'info': return <Info className="w-4 h-4 text-blue-500 shrink-0" />;
+      case 'success': return <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />;
+      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0" />;
+      case 'error': return <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />;
+      default: return <Bell className="w-4 h-4 text-gray-500 shrink-0" />;
+    }
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -143,9 +171,71 @@ export default function Layout({ children }: LayoutProps) {
         <header className="h-16 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10 flex items-center px-8">
           <div className="flex-1"></div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Bell className="w-4 h-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full relative">
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs rounded-full"
+                    >
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel className="flex items-center justify-between">
+                  <span>Benachrichtigungen</span>
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs h-auto py-0.5 px-2"
+                      onClick={() => markAllAsRead()}
+                    >
+                      <Check className="w-3 h-3 mr-1" />
+                      Alle lesen
+                    </Button>
+                  )}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {recentNotifications.length === 0 ? (
+                  <div className="py-6 text-center text-sm text-muted-foreground">
+                    Keine Benachrichtigungen
+                  </div>
+                ) : (
+                  recentNotifications.map((notification) => (
+                    <DropdownMenuItem
+                      key={notification.id}
+                      className={`flex items-start gap-3 p-3 cursor-pointer ${!notification.isRead ? 'bg-primary/5' : ''}`}
+                      onClick={() => !notification.isRead && markAsRead(notification.id)}
+                    >
+                      {getNotificationIcon(notification.type)}
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium truncate ${!notification.isRead ? 'text-foreground' : 'text-muted-foreground'}`}>
+                          {notification.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">
+                          {notification.message}
+                        </p>
+                      </div>
+                      {!notification.isRead && (
+                        <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />
+                      )}
+                    </DropdownMenuItem>
+                  ))
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-center justify-center text-sm text-primary cursor-pointer"
+                  onClick={() => navigate('/notifications')}
+                >
+                  Alle Benachrichtigungen anzeigen
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Settings className="w-4 h-4" />
             </Button>
