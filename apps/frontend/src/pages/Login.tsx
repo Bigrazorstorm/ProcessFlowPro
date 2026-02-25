@@ -25,7 +25,7 @@ export default function Login() {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Ungültige E-Mail oder Passwort');
+      setError('UngÃ¼ltige E-Mail oder Passwort');
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +118,14 @@ export default function Login() {
           </CardContent>
           <CardFooter className="flex justify-center border-t p-4 bg-muted/20">
             <p className="text-sm text-muted-foreground">
-              Demo-Zugang: owner@example.com / password
+              Demo-Zugang:{' '}
+              <button
+                type="button"
+                className="font-medium text-primary hover:underline"
+                onClick={() => { setEmail('owner@example.com'); setPassword('password123'); }}
+              >
+                owner@example.com / password123
+              </button>
             </p>
           </CardFooter>
         </Card>

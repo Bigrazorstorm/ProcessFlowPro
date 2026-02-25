@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
 import { useTemplates, WorkflowTemplate, TemplateStep, CreateStepDto, UpdateStepDto } from '../hooks/useTemplates';
 import StepModal from '../components/StepModal';
 
@@ -91,29 +90,25 @@ export default function TemplateEditor() {
 
   if (loading && !template) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Lade Template...</p>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Lade Template...</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (!template) {
     return (
-      <Layout>
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          Template nicht gefunden
-        </div>
-      </Layout>
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        Template nicht gefunden
+      </div>
     );
   }
 
   return (
-    <Layout>
+    <>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -338,6 +333,6 @@ export default function TemplateEditor() {
         onSave={handleSaveStep}
         step={selectedStep}
       />
-    </Layout>
+    </>
   );
 }
