@@ -25,7 +25,7 @@ export default function Login() {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Ungültige E-Mail oder Passwort');
+      setError('UngÃ¼ltige E-Mail oder Passwort');
     } finally {
       setIsLoading(false);
     }

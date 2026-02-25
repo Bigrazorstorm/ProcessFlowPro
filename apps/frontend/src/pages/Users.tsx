@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Layout from '../components/Layout';
 import { Plus, Search, MoreHorizontal, Mail, Shield } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -94,6 +95,7 @@ export default function Users() {
   };
 
   return (
+    <Layout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -132,7 +134,7 @@ export default function Users() {
                   <TableHead>Benutzer</TableHead>
                   <TableHead>Rolle</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Hinzugef�gt am</TableHead>
+                  <TableHead>Hinzugefügt am</TableHead>
                   <TableHead className="text-right">Aktionen</TableHead>
                 </TableRow>
               </TableHeader>
@@ -184,7 +186,7 @@ export default function Users() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Men� �ffnen</span>
+                              <span className="sr-only">Menü öffnen</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -208,5 +210,6 @@ export default function Users() {
         </CardContent>
       </Card>
     </div>
+    </Layout>
   );
 }

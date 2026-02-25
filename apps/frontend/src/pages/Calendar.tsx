@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Layout from '../components/Layout';
 import { ChevronLeft, ChevronRight, Plus, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -20,7 +21,7 @@ export default function Calendar() {
   ).getDay();
 
   const monthNames = [
-    'Januar', 'Februar', 'M�rz', 'April', 'Mai', 'Juni',
+    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
     'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
   ];
 
@@ -36,7 +37,7 @@ export default function Calendar() {
   const events = [
     { date: 5, title: 'USt-Voranmeldung', type: 'deadline' },
     { date: 10, title: 'Lohnsteuer', type: 'deadline' },
-    { date: 15, title: 'Mandantengespr�ch', type: 'meeting' },
+    { date: 15, title: 'Mandantengespräch', type: 'meeting' },
     { date: 28, title: 'Jahresabschluss', type: 'task' },
   ];
 
@@ -50,12 +51,13 @@ export default function Calendar() {
   };
 
   return (
+    <Layout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Kalender</h1>
           <p className="text-muted-foreground mt-1">
-            Ihre Termine und Fristen im �berblick.
+            Ihre Termine und Fristen im Überblick.
           </p>
         </div>
         <Button>
@@ -138,7 +140,7 @@ export default function Calendar() {
                       <span className="text-sm font-bold">{10 + i}</span>
                     </div>
                     <div>
-                      <p className="font-medium text-sm">Mandantengespr�ch</p>
+                      <p className="font-medium text-sm">Mandantengespräch</p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                         <Clock className="w-3 h-3" />
                         14:00 - 15:00
@@ -174,5 +176,6 @@ export default function Calendar() {
         </div>
       </div>
     </div>
+    </Layout>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Layout from '../components/Layout';
 import { BarChart3, Download, Filter, Calendar as CalendarIcon, TrendingUp, Users, GitMerge, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
@@ -30,7 +31,7 @@ export default function Reports() {
       icon: Users,
     },
     {
-      title: 'Produktivit‰t',
+      title: 'Produktivit√§t',
       value: '94%',
       trend: '+2%',
       trendUp: true,
@@ -39,6 +40,7 @@ export default function Reports() {
   ];
 
   return (
+    <Layout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -51,7 +53,7 @@ export default function Reports() {
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-[180px]">
               <CalendarIcon className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Zeitraum w‰hlen" />
+              <SelectValue placeholder="Zeitraum w√§hlen" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="week">Letzte 7 Tage</SelectItem>
@@ -124,5 +126,6 @@ export default function Reports() {
         </Card>
       </div>
     </div>
+    </Layout>
   );
 }

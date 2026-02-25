@@ -1,4 +1,5 @@
 import { Bell, Check, Trash2, Info, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import Layout from '../components/Layout';
 import { useNotifications } from '../hooks/useNotifications';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -20,6 +21,7 @@ export default function Notifications() {
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
+    <Layout>
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
@@ -32,7 +34,7 @@ export default function Notifications() {
             )}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Bleiben Sie �ber wichtige Ereignisse und Updates informiert.
+            Bleiben Sie über wichtige Ereignisse und Updates informiert.
           </p>
         </div>
         {unreadCount > 0 && (
@@ -98,7 +100,7 @@ export default function Notifications() {
                       size="icon"
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => deleteNotification(notification.id)}
-                      title="L�schen"
+                      title="Löschen"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -110,5 +112,6 @@ export default function Notifications() {
         </CardContent>
       </Card>
     </div>
+    </Layout>
   );
 }

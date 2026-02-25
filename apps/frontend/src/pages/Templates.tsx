@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Layout from '../components/Layout';
 import { Plus, Search, MoreHorizontal, FileText, Copy, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -40,7 +41,7 @@ export default function Templates() {
       {
         id: '1',
         name: 'Jahresabschluss Standard',
-        description: 'Standard-Workflow für den Jahresabschluss von Kapitalgesellschaften.',
+        description: 'Standard-Workflow fÃ¼r den Jahresabschluss von Kapitalgesellschaften.',
         category: 'Jahresabschluss',
         stepsCount: 15,
         updatedAt: '2024-02-15',
@@ -48,7 +49,7 @@ export default function Templates() {
       {
         id: '2',
         name: 'Einkommensteuer',
-        description: 'Workflow für die private Einkommensteuererklärung.',
+        description: 'Workflow fÃ¼r die private EinkommensteuererklÃ¤rung.',
         category: 'Steuern',
         stepsCount: 8,
         updatedAt: '2024-03-01',
@@ -56,7 +57,7 @@ export default function Templates() {
       {
         id: '3',
         name: 'Lohnabrechnung Monatlich',
-        description: 'Wiederkehrender Workflow für die monatliche Lohnabrechnung.',
+        description: 'Wiederkehrender Workflow fÃ¼r die monatliche Lohnabrechnung.',
         category: 'Lohn',
         stepsCount: 5,
         updatedAt: '2024-01-20',
@@ -70,12 +71,13 @@ export default function Templates() {
   );
 
   return (
+    <Layout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Workflow Templates</h1>
           <p className="text-muted-foreground mt-1">
-            Erstellen und verwalten Sie Vorlagen für wiederkehrende Prozesse.
+            Erstellen und verwalten Sie Vorlagen fÃ¼r wiederkehrende Prozesse.
           </p>
         </div>
         <Button>
@@ -149,7 +151,7 @@ export default function Templates() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Menü öffnen</span>
+                              <span className="sr-only">MenÃ¼ Ã¶ffnen</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -166,7 +168,7 @@ export default function Templates() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive">
                               <Trash2 className="w-4 h-4 mr-2" />
-                              Löschen
+                              LÃ¶schen
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -180,5 +182,6 @@ export default function Templates() {
         </CardContent>
       </Card>
     </div>
+    </Layout>
   );
 }

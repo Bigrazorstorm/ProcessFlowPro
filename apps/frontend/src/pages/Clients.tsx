@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Layout from '../components/Layout';
 import { Plus, Search, MoreHorizontal, Building2, Mail, Phone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -39,7 +40,7 @@ export default function Clients() {
     setClients([
       {
         id: '1',
-        name: 'Müller GmbH',
+        name: 'MÃ¼ller GmbH',
         email: 'info@mueller-gmbh.de',
         phone: '+49 123 456789',
         status: 'active',
@@ -70,6 +71,7 @@ export default function Clients() {
   );
 
   return (
+    <Layout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -108,7 +110,7 @@ export default function Clients() {
                   <TableHead>Name</TableHead>
                   <TableHead>Kontakt</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Hinzugefügt am</TableHead>
+                  <TableHead>HinzugefÃ¼gt am</TableHead>
                   <TableHead className="text-right">Aktionen</TableHead>
                 </TableRow>
               </TableHeader>
@@ -152,7 +154,7 @@ export default function Clients() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Menü öffnen</span>
+                              <span className="sr-only">MenÃ¼ Ã¶ffnen</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -162,7 +164,7 @@ export default function Clients() {
                             <DropdownMenuItem>Bearbeiten</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive">
-                              Löschen
+                              LÃ¶schen
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -176,5 +178,6 @@ export default function Clients() {
         </CardContent>
       </Card>
     </div>
+    </Layout>
   );
 }

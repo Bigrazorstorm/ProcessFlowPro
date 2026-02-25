@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import Layout from '../components/Layout';
 import { 
   Building2, 
   FileText, 
@@ -37,7 +38,7 @@ export default function Dashboard() {
       icon: Building2,
       trend: '+2',
       trendUp: true,
-      description: 'gegen�ber letztem Monat'
+      description: 'gegenüber letztem Monat'
     },
     {
       title: 'Laufende Workflows',
@@ -45,7 +46,7 @@ export default function Dashboard() {
       icon: GitMerge,
       trend: '+15%',
       trendUp: true,
-      description: 'gegen�ber letztem Monat'
+      description: 'gegenüber letztem Monat'
     },
     {
       title: 'Erledigte Aufgaben',
@@ -66,6 +67,7 @@ export default function Dashboard() {
   ];
 
   return (
+    <Layout>
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
@@ -138,7 +140,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Anstehende Aufgaben</CardTitle>
-            <CardDescription>Ihre n�chsten To-Dos</CardDescription>
+            <CardDescription>Ihre nächsten To-Dos</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -147,7 +149,7 @@ export default function Dashboard() {
                   <div className="w-2 h-2 rounded-full bg-primary" />
                   <div className="flex-1">
                     <p className="font-medium">Belege anfordern</p>
-                    <p className="text-sm text-muted-foreground">Steuererkl�rung M�ller</p>
+                    <p className="text-sm text-muted-foreground">Steuererklärung Müller</p>
                   </div>
                   <Button variant="ghost" size="sm">Erledigen</Button>
                 </div>
@@ -157,5 +159,6 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
+    </Layout>
   );
 }
