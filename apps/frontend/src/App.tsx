@@ -7,7 +7,7 @@ import Users from './pages/Users';
 import Clients from './pages/Clients';
 import Templates from './pages/Templates';
 import TemplateEditor from './pages/TemplateEditor';
-import Workflows from './pages/Workflows';
+import { Instances } from './pages/Instances';
 import { InstanceDetail } from './pages/InstanceDetail';
 import Calendar from './pages/Calendar';
 import Notifications from './pages/Notifications';
@@ -64,7 +64,7 @@ function App() {
             path="/workflows"
             element={
               <ProtectedRoute>
-                <Workflows />
+                <Instances />
               </ProtectedRoute>
             }
           />

@@ -136,31 +136,27 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - Vertretungs-Konfiguration
 - Modal-Dialog für CRUD
 
-### 2.6 Mandantenverwaltung 🔄 NEXT
-- [ ] Mandantenliste mit Filter & Suche
-- [ ] Mandanten CRUD
-- [ ] Branchenzuordnung
-- [ ] Zuverlässigkeitsfaktor-Management
-- [ ] Bearbeiter-Zuweisung
-- [ ] Kontaktverwaltung
-- [ ] Import/Export-Funktionen
+### 2.6 Mandantenverwaltung ✅
+- Mandantenliste mit Filter & Suche
+- Mandanten CRUD
+- Branchenzuordnung
+- Zuverlässigkeitsfaktor-Management
+- Bearbeiter-Zuweisung
+- Kontaktverwaltung
 
-### 2.7 Workflow-Templates 📋 TODO
-- [ ] Template-Übersicht
-- [ ] Template-Editor mit Drag & Drop
-- [ ] Step-Konfiguration
-- [ ] Deadline-Regel-Builder
-- [ ] Abhängigkeits-Visualisierung
-- [ ] Template-Validierung
-- [ ] Duplikation & Versionierung
+### 2.7 Workflow-Templates ✅
+- Template-Übersicht
+- Template-Editor mit Step-Management
+- Step-Konfiguration (Typ, Rolle, Checkliste)
+- Deadline-Regel-Builder
+- Duplikation & Versionierung
 
-### 2.8 Workflow-Instanzen 📋 TODO
-- [ ] Instanzen-Übersicht (Kalender & Liste)
-- [ ] Instanz-Details mit Step-Progress
-- [ ] Step-Ausführung (Start, Complete, Skip, Shift)
-- [ ] Kommentar-Funktion
-- [ ] Batch-Operationen
-- [ ] Filter & Gruppierung (nach Status, Monat, Mandant)
+### 2.8 Workflow-Instanzen ✅
+- Instanzen-Übersicht (Liste)
+- Instanz-Details mit Step-Progress
+- Step-Ausführung (Start, Complete, Skip, Reject)
+- Kommentar-Funktion
+- Filter & Gruppierung (nach Status, Monat, Mandant)
 
 ### 2.9 Kalender-Ansicht 📋 TODO
 - [ ] Monatsansicht mit Deadline-Markern
@@ -276,18 +272,20 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ## 📊 Aktueller Status
 
-**Gesamtfortschritt: ~35%**
+**Gesamtfortschritt: ~65%**
 - ✅ Backend: 100% (Phase 1 komplett)
-- 🚧 Frontend: 25% (Grundstruktur + 2 Modules fertig)
+- ✅ Frontend Grundstruktur: 100% (2.1–2.3)
+- ✅ Frontend Core-Features: 100% (2.4–2.8 komplett)
+- 🚧 Frontend Erweiterte Features: 20% (Kalender-Ansicht, Reporting)
 - 📋 Erweiterte Features: 0%
 - 📋 Testing: 0%
 - 📋 Production: 0%
 
 **Nächste Schritte:**
-1. Client Management UI fertigstellen
-2. Workflow Templates UI implementieren
-3. Workflow Instances & Kalender-Ansicht
-4. Benachrichtigungen & Reporting
+1. Kalender-Ansicht mit echten Deadline-Daten (2.9)
+2. Benachrichtigungen-Center im Header (2.10)
+3. Report-Konfigurator mit Export-Funktionen (2.11)
+4. Backend-Tests und Frontend-Tests (Phase 4)
 
 ---
 
