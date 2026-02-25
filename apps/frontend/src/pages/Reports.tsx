@@ -10,6 +10,8 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
+  Bookmark,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
@@ -57,7 +59,25 @@ interface WorkflowMetrics {
   averageStepsCompleted: number;
 }
 
+interface SavedReport {
+  id: string;
+  name: string;
+  type: string;
+  timeRange: string;
+  savedAt: string;
+}
+
+const SAVED_REPORTS_KEY = 'pfp_saved_reports';
 const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#14b8a6'];
+
+const REPORT_TYPES = [
+  { type: 'WORKFLOW_SUMMARY', title: 'Workflow-Zusammenfassung', desc: 'Übersicht aller Workflows und deren Status', icon: GitMerge },
+  { type: 'CLIENT_PERFORMANCE', title: 'Mandanten-Performance', desc: 'Analyse der Bearbeitungszeiten pro Mandant', icon: Users },
+  { type: 'USER_WORKLOAD', title: 'Team-Auslastung', desc: 'Kapazitätsauslastung aller Mitarbeiter', icon: TrendingUp },
+  { type: 'DEADLINE_COMPLIANCE', title: 'Fristen-Einhaltung', desc: 'Auswertung der Fristeneinhaltung', icon: Clock },
+  { type: 'TEMPLATE_ANALYTICS', title: 'Template-Analyse', desc: 'Performance der Workflow-Templates', icon: Filter },
+  { type: 'FINANCIAL_SUMMARY', title: 'Finanz-Zusammenfassung', desc: 'Finanzkennzahlen und KPIs', icon: BarChart3 },
+];
 
 export default function Reports() {
   const [timeRange, setTimeRange] = useState('month');
@@ -66,9 +86,11 @@ export default function Reports() {
   const [workflowMetrics, setWorkflowMetrics] = useState<WorkflowMetrics[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
 
   useEffect(() => {
     loadData();
+    loadSavedReports();
   }, []);
 
   const loadData = async () => {
@@ -90,11 +112,46 @@ export default function Reports() {
     }
   };
 
-  const handleExport = async (format: 'pdf' | 'excel' | 'csv') => {
+  const loadSavedReports = () => {
+    try {
+      const stored = localStorage.getItem(SAVED_REPORTS_KEY);
+      setSavedReports(stored ? JSON.parse(stored) : []);
+    } catch {
+      setSavedReports([]);
+    }
+  };
+
+  const persistSavedReports = (reports: SavedReport[]) => {
+    localStorage.setItem(SAVED_REPORTS_KEY, JSON.stringify(reports));
+    setSavedReports(reports);
+  };
+
+  const saveReport = (reportType: string) => {
+    const reportMeta = REPORT_TYPES.find((r) => r.type === reportType);
+    const newReport: SavedReport = {
+      id: Date.now().toString(),
+      name: reportMeta?.title ?? reportType,
+      type: reportType,
+      timeRange,
+      savedAt: new Date().toISOString(),
+    };
+    persistSavedReports([newReport, ...savedReports]);
+  };
+
+  const deleteSavedReport = (id: string) => {
+    persistSavedReports(savedReports.filter((r) => r.id !== id));
+  };
+
+  const runSavedReport = (report: SavedReport) => {
+    setTimeRange(report.timeRange);
+    handleExport('pdf', report.type);
+  };
+
+  const handleExport = async (format: 'pdf' | 'excel' | 'csv', reportType?: string) => {
     try {
       setExporting(true);
       await api.post('/reports/generate', {
-        type: 'WORKFLOW_SUMMARY',
+        type: reportType ?? 'WORKFLOW_SUMMARY',
         format: format.toUpperCase(),
         timeRange,
       });
@@ -322,40 +379,111 @@ export default function Reports() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { type: 'WORKFLOW_SUMMARY', title: 'Workflow-Zusammenfassung', desc: 'Übersicht aller Workflows und deren Status', icon: GitMerge },
-              { type: 'CLIENT_PERFORMANCE', title: 'Mandanten-Performance', desc: 'Analyse der Bearbeitungszeiten pro Mandant', icon: Users },
-              { type: 'USER_WORKLOAD', title: 'Team-Auslastung', desc: 'Kapazitätsauslastung aller Mitarbeiter', icon: TrendingUp },
-              { type: 'DEADLINE_COMPLIANCE', title: 'Fristen-Einhaltung', desc: 'Auswertung der Fristeneinhaltung', icon: Clock },
-              { type: 'TEMPLATE_ANALYTICS', title: 'Template-Analyse', desc: 'Performance der Workflow-Templates', icon: Filter },
-              { type: 'FINANCIAL_SUMMARY', title: 'Finanz-Zusammenfassung', desc: 'Finanzkennzahlen und KPIs', icon: BarChart3 },
-            ].map((report) => {
+            {REPORT_TYPES.map((report) => {
               const Icon = report.icon;
               return (
                 <div
                   key={report.type}
-                  className="p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
-                  onClick={() => handleExport('pdf')}
+                  className="p-4 border rounded-lg hover:bg-muted/50 transition-colors group"
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                       <Icon className="w-5 h-5 text-primary" />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-sm">{report.title}</h3>
                       <p className="text-xs text-muted-foreground mt-1">{report.desc}</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="mt-3 w-full">
-                    <Download className="w-3 h-3 mr-2" />
-                    Generieren
-                  </Button>
+                  <div className="flex gap-2 mt-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handleExport('pdf', report.type)}
+                    >
+                      <Download className="w-3 h-3 mr-2" />
+                      Generieren
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      title="Report speichern"
+                      onClick={() => saveReport(report.type)}
+                    >
+                      <Bookmark className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
               );
             })}
           </div>
         </CardContent>
       </Card>
+
+      {savedReports.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bookmark className="w-5 h-5" />
+              Gespeicherte Reports
+            </CardTitle>
+            <CardDescription>Ihre gespeicherten Report-Konfigurationen für schnellen Zugriff.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {savedReports.map((report) => {
+                const reportMeta = REPORT_TYPES.find((r) => r.type === report.type);
+                const Icon = reportMeta?.icon ?? BarChart3;
+                const savedDate = new Date(report.savedAt);
+                const timeRangeLabels: Record<string, string> = {
+                  week: 'Letzte 7 Tage',
+                  month: 'Letzter Monat',
+                  quarter: 'Letztes Quartal',
+                  year: 'Letztes Jahr',
+                };
+                return (
+                  <div
+                    key={report.id}
+                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Icon className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{report.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {timeRangeLabels[report.timeRange] ?? report.timeRange} · Gespeichert am{' '}
+                          {savedDate.toLocaleDateString('de-DE')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => runSavedReport(report)}
+                      >
+                        <Download className="w-3 h-3 mr-1" />
+                        Ausführen
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteSavedReport(report.id)}
+                        title="Report löschen"
+                      >
+                        <Trash2 className="w-3 h-3 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

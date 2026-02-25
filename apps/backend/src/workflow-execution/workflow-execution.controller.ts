@@ -19,6 +19,7 @@ import {
   EstimationDto,
   ApproveStepDto,
   RejectStepDto,
+  ShiftStepDateDto,
 } from './dto/step-execution.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../auth/guards/tenant.guard';
@@ -148,6 +149,19 @@ export class WorkflowExecutionController {
     const userId = (req as any).user.userId;
 
     return this.executionService.rejectStep(stepId, tenantId, dto, userId);
+  }
+
+  /**
+   * Shift the due date of a step (used for calendar drag & drop)
+   */
+  @Patch('steps/:stepId/shift-date')
+  async shiftStepDate(
+    @Param('stepId') stepId: string,
+    @Body() dto: ShiftStepDateDto,
+    @Req() req: Request,
+  ) {
+    const tenantId = (req as any).user.tenantId;
+    return this.executionService.shiftStepDate(stepId, tenantId, dto);
   }
 
   /**

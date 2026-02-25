@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsNumber, IsUUID } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsNumber, IsUUID, IsDateString } from 'class-validator';
 import { WorkflowStepStatus } from '../../database/entities/workflow-step.entity';
 
 export class UpdateStepStatusDto {
@@ -47,4 +47,13 @@ export class ApproveStepDto {
 export class RejectStepDto {
   @IsString()
   reason!: string;
+}
+
+export class ShiftStepDateDto {
+  @IsDateString()
+  newDueDate!: string;
+
+  @IsOptional()
+  @IsString()
+  reason?: string;
 }

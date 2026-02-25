@@ -20,6 +20,8 @@ export default function Calendar() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [deadlines, setDeadlines] = useState<CalendarDeadline[]>([]);
   const [loading, setLoading] = useState(true);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragOverDay, setDragOverDay] = useState<number | null>(null);
 
   const monthNames = [
     'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
@@ -121,6 +123,72 @@ export default function Calendar() {
     return <Clock className="w-4 h-4 text-blue-500" />;
   };
 
+  const handleDragStart = (e: React.DragEvent, deadlineId: string) => {
+    setDraggedId(deadlineId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, day: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverDay(day);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverDay(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, day: number) => {
+    e.preventDefault();
+    setDragOverDay(null);
+
+    if (!draggedId) return;
+
+    const deadline = deadlines.find((d) => d.id === draggedId);
+    if (!deadline) return;
+
+    const newDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day,
+    );
+    const currentDeadlineDate = new Date(deadline.dueDate);
+
+    // No-op if dropped on the same day
+    if (
+      newDate.getDate() === currentDeadlineDate.getDate() &&
+      newDate.getMonth() === currentDeadlineDate.getMonth() &&
+      newDate.getFullYear() === currentDeadlineDate.getFullYear()
+    ) {
+      setDraggedId(null);
+      return;
+    }
+
+    // Optimistic update
+    setDeadlines((prev) =>
+      prev.map((d) =>
+        d.id === draggedId
+          ? { ...d, dueDate: newDate.toISOString(), status: 'shifted' }
+          : d,
+      ),
+    );
+    setDraggedId(null);
+
+    try {
+      await api.patch(`/workflow-execution/steps/${draggedId}/shift-date`, {
+        newDueDate: newDate.toISOString(),
+      });
+    } catch {
+      // Revert on error
+      await loadDeadlines();
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedId(null);
+    setDragOverDay(null);
+  };
+
   const upcomingDeadlines = deadlines
     .filter((d) => new Date(d.dueDate) >= new Date())
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
@@ -134,7 +202,7 @@ export default function Calendar() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Kalender</h1>
           <p className="text-muted-foreground mt-1">
-            Ihre Fristen und Workflow-Deadlines im Überblick.
+            Ihre Fristen und Workflow-Deadlines im Überblick. Fristen können per Drag & Drop verschoben werden.
           </p>
         </div>
       </div>
@@ -183,14 +251,20 @@ export default function Calendar() {
                     currentDate.getMonth() === today.getMonth() &&
                     currentDate.getFullYear() === today.getFullYear();
                   const isSelected = selectedDay === day;
+                  const isDragOver = dragOverDay === day;
 
                   return (
                     <div
                       key={day}
                       onClick={() => setSelectedDay(isSelected ? null : day)}
+                      onDragOver={(e) => handleDragOver(e, day)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, day)}
                       className={`bg-card min-h-[100px] p-2 border-t border-l border-border cursor-pointer transition-colors hover:bg-muted/30 ${
                         isToday ? 'bg-primary/5' : ''
-                      } ${isSelected ? 'ring-2 ring-primary ring-inset' : ''}`}
+                      } ${isSelected ? 'ring-2 ring-primary ring-inset' : ''} ${
+                        isDragOver ? 'bg-primary/10 ring-2 ring-primary/50 ring-inset' : ''
+                      }`}
                     >
                       <div
                         className={`text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full mb-1 ${
@@ -203,7 +277,16 @@ export default function Calendar() {
                         {dayDeadlines.slice(0, 2).map((deadline, i) => (
                           <div
                             key={i}
-                            className={`text-xs px-1.5 py-0.5 rounded truncate ${getStatusColor(deadline.status)}`}
+                            draggable
+                            onDragStart={(e) => {
+                              e.stopPropagation();
+                              handleDragStart(e, deadline.id);
+                            }}
+                            onDragEnd={handleDragEnd}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`text-xs px-1.5 py-0.5 rounded truncate cursor-grab active:cursor-grabbing select-none ${getStatusColor(deadline.status)} ${
+                              draggedId === deadline.id ? 'opacity-40' : ''
+                            }`}
                             title={`${deadline.stepName} – ${deadline.clientName}`}
                           >
                             {deadline.stepName}
@@ -314,7 +397,14 @@ export default function Calendar() {
                   <div className="w-3 h-3 rounded-full bg-green-400" />
                   <span className="text-sm">Abgeschlossen</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-gray-400" />
+                  <span className="text-sm">Verschoben</span>
+                </div>
               </div>
+              <p className="text-xs text-muted-foreground mt-3">
+                💡 Fristen können per Drag & Drop auf einen anderen Tag verschoben werden.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -322,3 +412,4 @@ export default function Calendar() {
     </div>
   );
 }
+
