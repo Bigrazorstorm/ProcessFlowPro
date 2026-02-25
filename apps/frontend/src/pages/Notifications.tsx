@@ -13,11 +13,20 @@ export default function Notifications() {
 
   const getIcon = (type: string) => {
     switch (type) {
-      case 'info': return <Info className="w-5 h-5 text-blue-500" />;
-      case 'success': return <CheckCircle2 className="w-5 h-5 text-green-500" />;
-      case 'warning': return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
-      case 'error': return <AlertTriangle className="w-5 h-5 text-red-500" />;
-      default: return <Bell className="w-5 h-5 text-gray-500" />;
+      case 'DEADLINE_OVERDUE':
+      case 'APPROVAL_REJECTED':
+        return <AlertTriangle className="w-5 h-5 text-red-500" />;
+      case 'DEADLINE_APPROACHING':
+      case 'STEP_BLOCKED':
+        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+      case 'WORKFLOW_COMPLETED':
+        return <CheckCircle2 className="w-5 h-5 text-green-500" />;
+      case 'STEP_ASSIGNED':
+      case 'APPROVAL_REQUESTED':
+      case 'COMMENT_MENTIONED':
+      case 'WORKFLOW_STARTED':
+      default:
+        return <Info className="w-5 h-5 text-blue-500" />;
     }
   };
 

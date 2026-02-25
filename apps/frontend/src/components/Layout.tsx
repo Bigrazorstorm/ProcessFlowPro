@@ -49,11 +49,20 @@ export default function Layout({ children }: LayoutProps) {
 
   const getNotifIcon = (type: string) => {
     switch (type) {
-      case 'info': return <Info className="w-4 h-4 text-blue-500" />;
-      case 'success': return <CheckCircle2 className="w-4 h-4 text-green-500" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      case 'error': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      default: return <Bell className="w-4 h-4 text-gray-500" />;
+      case 'DEADLINE_OVERDUE':
+      case 'APPROVAL_REJECTED':
+        return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      case 'DEADLINE_APPROACHING':
+      case 'STEP_BLOCKED':
+        return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+      case 'WORKFLOW_COMPLETED':
+        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+      case 'STEP_ASSIGNED':
+      case 'APPROVAL_REQUESTED':
+      case 'COMMENT_MENTIONED':
+      case 'WORKFLOW_STARTED':
+      default:
+        return <Info className="w-4 h-4 text-blue-500" />;
     }
   };
 

@@ -64,10 +64,13 @@ export class DashboardController {
   @Get('calendar')
   async getCalendarDeadlines(
     @Req() req: Request,
-    @Query('year', new DefaultValuePipe(new Date().getFullYear()), ParseIntPipe) year: number,
-    @Query('month', new DefaultValuePipe(new Date().getMonth() + 1), ParseIntPipe) month: number,
+    @Query('year') yearStr?: string,
+    @Query('month') monthStr?: string,
   ) {
     const tenantId = (req as any).user.tenantId;
+    const now = new Date();
+    const year = yearStr ? parseInt(yearStr, 10) : now.getFullYear();
+    const month = monthStr ? parseInt(monthStr, 10) : now.getMonth() + 1;
     return this.dashboardService.getCalendarDeadlines(tenantId, year, month);
   }
 

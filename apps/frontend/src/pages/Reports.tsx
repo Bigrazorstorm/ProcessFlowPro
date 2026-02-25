@@ -88,14 +88,12 @@ export default function Reports() {
       });
 
       // Download the result
-      const dataStr = typeof response.data === 'string'
-        ? response.data
-        : JSON.stringify(response.data, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/octet-stream' });
+      const exportResult = response.data as { data: string; filename: string; mimeType: string };
+      const blob = new Blob([exportResult.data], { type: exportResult.mimeType });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `report-${reportType.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.${exportFormat}`;
+      a.download = exportResult.filename;
       a.click();
       URL.revokeObjectURL(url);
       toast({ title: 'Export erfolgreich', description: `Bericht wurde als ${exportFormat.toUpperCase()} exportiert.` });

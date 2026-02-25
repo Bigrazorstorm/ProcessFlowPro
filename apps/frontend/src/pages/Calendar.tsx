@@ -41,8 +41,9 @@ export default function Calendar() {
   };
 
   const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const upcomingDeadlines = deadlines
-    .filter((d) => new Date(d.dueDate) >= today && d.status !== 'done')
+    .filter((d) => new Date(d.dueDate) >= todayStart && d.status !== 'done')
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
     .slice(0, 5);
 
