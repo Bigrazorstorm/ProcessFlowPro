@@ -50,9 +50,7 @@ describe('Notifications E2E', () => {
 
   describe('GET /notifications', () => {
     it('should return an empty array for a new user', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/notifications')
-        .set('Authorization', `Bearer ${ownerToken}`);
+      const res = await request(app.getHttpServer()).get('/notifications').set('Authorization', `Bearer ${ownerToken}`);
 
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);

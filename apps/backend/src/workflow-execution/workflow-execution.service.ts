@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ForbiddenException,
-  Optional,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WorkflowStep, WorkflowStepStatus } from '../database/entities/workflow-step.entity';
@@ -127,11 +121,7 @@ export class WorkflowExecutionService {
   /**
    * Assign step to a user
    */
-  async assignStep(
-    stepId: string,
-    tenantId: string,
-    dto: AssignStepDto,
-  ): Promise<StepExecutionResponseDto> {
+  async assignStep(stepId: string, tenantId: string, dto: AssignStepDto): Promise<StepExecutionResponseDto> {
     const step = await this.stepsRepository.findOne({
       where: { id: stepId },
       relations: ['instance'],
@@ -164,11 +154,7 @@ export class WorkflowExecutionService {
   /**
    * Start a step (move to IN_PROGRESS)
    */
-  async startStep(
-    stepId: string,
-    tenantId: string,
-    userId: string,
-  ): Promise<StepExecutionResponseDto> {
+  async startStep(stepId: string, tenantId: string, userId: string): Promise<StepExecutionResponseDto> {
     const step = await this.stepsRepository.findOne({
       where: { id: stepId },
       relations: ['instance'],
@@ -180,9 +166,7 @@ export class WorkflowExecutionService {
 
     // Can only start from OPEN or SHIFTED status
     if (![WorkflowStepStatus.OPEN, WorkflowStepStatus.SHIFTED].includes(step.status)) {
-      throw new BadRequestException(
-        `Cannot start step with status ${step.status}`,
-      );
+      throw new BadRequestException(`Cannot start step with status ${step.status}`);
     }
 
     step.status = WorkflowStepStatus.IN_PROGRESS as any;
@@ -211,12 +195,7 @@ export class WorkflowExecutionService {
   /**
    * Log time spent on a step
    */
-  async logTime(
-    stepId: string,
-    tenantId: string,
-    dto: LogTimeDto,
-    userId: string,
-  ): Promise<StepExecutionResponseDto> {
+  async logTime(stepId: string, tenantId: string, dto: LogTimeDto, userId: string): Promise<StepExecutionResponseDto> {
     const step = await this.stepsRepository.findOne({
       where: { id: stepId },
       relations: ['instance', 'comments'],
@@ -309,9 +288,7 @@ export class WorkflowExecutionService {
     }
 
     if (step.status !== WorkflowStepStatus.PENDING_APPROVAL) {
-      throw new BadRequestException(
-        `Only steps in ${WorkflowStepStatus.PENDING_APPROVAL} can be approved`,
-      );
+      throw new BadRequestException(`Only steps in ${WorkflowStepStatus.PENDING_APPROVAL} can be approved`);
     }
 
     step.status = WorkflowStepStatus.DONE as any;
@@ -361,9 +338,7 @@ export class WorkflowExecutionService {
     }
 
     if (step.status !== WorkflowStepStatus.PENDING_APPROVAL) {
-      throw new BadRequestException(
-        `Only steps in ${WorkflowStepStatus.PENDING_APPROVAL} can be rejected`,
-      );
+      throw new BadRequestException(`Only steps in ${WorkflowStepStatus.PENDING_APPROVAL} can be rejected`);
     }
 
     step.status = WorkflowStepStatus.IN_PROGRESS as any;
@@ -416,11 +391,7 @@ export class WorkflowExecutionService {
   /**
    * Shift the due date of a step (for drag & drop calendar rescheduling)
    */
-  async shiftStepDate(
-    stepId: string,
-    tenantId: string,
-    dto: ShiftStepDateDto,
-  ): Promise<StepExecutionResponseDto> {
+  async shiftStepDate(stepId: string, tenantId: string, dto: ShiftStepDateDto): Promise<StepExecutionResponseDto> {
     const step = await this.stepsRepository.findOne({
       where: { id: stepId },
       relations: ['instance'],
@@ -449,10 +420,7 @@ export class WorkflowExecutionService {
   /**
    * Get all comments for a step
    */
-  async getStepComments(
-    stepId: string,
-    tenantId: string,
-  ): Promise<StepCommentResponseDto[]> {
+  async getStepComments(stepId: string, tenantId: string): Promise<StepCommentResponseDto[]> {
     const step = await this.stepsRepository.findOne({
       where: { id: stepId },
       relations: ['instance'],
@@ -473,10 +441,7 @@ export class WorkflowExecutionService {
   /**
    * Get workflow instance progress/status
    */
-  async getWorkflowProgress(
-    instanceId: string,
-    tenantId: string,
-  ): Promise<WorkflowProgressResponseDto> {
+  async getWorkflowProgress(instanceId: string, tenantId: string): Promise<WorkflowProgressResponseDto> {
     const instance = await this.instancesRepository.findOne({
       where: { id: instanceId, tenantId },
       relations: ['steps'],
@@ -488,13 +453,9 @@ export class WorkflowExecutionService {
 
     const steps = instance.steps || [];
     const totalSteps = steps.length;
-    const completedSteps = steps.filter((s) => s.status === WorkflowStepStatus.DONE)
-      .length;
-    const blockedSteps = steps.filter((s) => s.status === WorkflowStepStatus.SHIFTED)
-      .length;
-    const inProgressSteps = steps.filter(
-      (s) => s.status === WorkflowStepStatus.IN_PROGRESS,
-    ).length;
+    const completedSteps = steps.filter((s) => s.status === WorkflowStepStatus.DONE).length;
+    const blockedSteps = steps.filter((s) => s.status === WorkflowStepStatus.SHIFTED).length;
+    const inProgressSteps = steps.filter((s) => s.status === WorkflowStepStatus.IN_PROGRESS).length;
     const percentComplete = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
     // Load full step details with comments
@@ -521,10 +482,7 @@ export class WorkflowExecutionService {
   /**
    * Validate status transitions
    */
-  private validateStatusTransition(
-    currentStatus: WorkflowStepStatus,
-    newStatus: WorkflowStepStatus,
-  ): void {
+  private validateStatusTransition(currentStatus: WorkflowStepStatus, newStatus: WorkflowStepStatus): void {
     const allowedTransitions: Record<WorkflowStepStatus, WorkflowStepStatus[]> = {
       [WorkflowStepStatus.OPEN]: [
         WorkflowStepStatus.IN_PROGRESS,
@@ -550,9 +508,7 @@ export class WorkflowExecutionService {
 
     const allowed = allowedTransitions[currentStatus] || [];
     if (!allowed.includes(newStatus)) {
-      throw new BadRequestException(
-        `Cannot transition from ${currentStatus} to ${newStatus}`,
-      );
+      throw new BadRequestException(`Cannot transition from ${currentStatus} to ${newStatus}`);
     }
   }
 

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Queue } from 'bull';
@@ -14,10 +9,7 @@ import { WorkflowTemplate } from '../database/entities/workflow-template.entity'
 import { Client } from '../database/entities/client.entity';
 import { DeadlineCalculatorService } from '../deadline-calculator/deadline-calculator.service';
 import { CreateWorkflowInstanceDto } from './dto/create-workflow-instance.dto';
-import {
-  WorkflowInstanceResponseDto,
-  WorkflowStepResponseDto,
-} from './dto/workflow-instance-response.dto';
+import { WorkflowInstanceResponseDto, WorkflowStepResponseDto } from './dto/workflow-instance-response.dto';
 import { endOfMonth } from 'date-fns';
 
 @Injectable()
@@ -123,11 +115,7 @@ export class WorkflowInstancesService {
   /**
    * Get all workflow instances in tenant (for admin/dashboard view)
    */
-  async findAllByTenant(
-    tenantId: string,
-    page = 1,
-    limit = 20,
-  ): Promise<WorkflowInstanceResponseDto[]> {
+  async findAllByTenant(tenantId: string, page = 1, limit = 20): Promise<WorkflowInstanceResponseDto[]> {
     const instances = await this.instancesRepository.find({
       where: { tenantId },
       relations: ['steps'],
@@ -142,10 +130,7 @@ export class WorkflowInstancesService {
   /**
    * Get single instance
    */
-  async findOne(
-    id: string,
-    tenantId: string,
-  ): Promise<WorkflowInstanceResponseDto> {
+  async findOne(id: string, tenantId: string): Promise<WorkflowInstanceResponseDto> {
     const instance = await this.instancesRepository.findOne({
       where: { id, tenantId },
       relations: ['steps'],
@@ -185,11 +170,7 @@ export class WorkflowInstancesService {
         try {
           // Check if instance already exists for this month
           const currentMonth = new Date();
-          const monthStart = new Date(
-            currentMonth.getFullYear(),
-            currentMonth.getMonth(),
-            1,
-          );
+          const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
           const monthEnd = endOfMonth(currentMonth);
 
           const existingInstance = await this.instancesRepository.findOne({
@@ -212,10 +193,7 @@ export class WorkflowInstancesService {
           createdCount++;
         } catch (error) {
           // Log error but continue with other templates
-          console.error(
-            `Failed to create instance for template ${template.id}, client ${client.id}:`,
-            error,
-          );
+          console.error(`Failed to create instance for template ${template.id}, client ${client.id}:`, error);
         }
       }
     }
@@ -252,34 +230,15 @@ export class WorkflowInstancesService {
   /**
    * Start a workflow step (mark as IN_PROGRESS)
    */
-  async startStep(
-    stepId: string,
-    tenantId: string,
-    userId: string,
-  ): Promise<WorkflowStepResponseDto> {
-    return this.updateStepStatus(
-      stepId,
-      WorkflowStepStatus.IN_PROGRESS,
-      tenantId,
-      userId,
-    );
+  async startStep(stepId: string, tenantId: string, userId: string): Promise<WorkflowStepResponseDto> {
+    return this.updateStepStatus(stepId, WorkflowStepStatus.IN_PROGRESS, tenantId, userId);
   }
 
   /**
    * Complete a workflow step (mark as DONE)
    */
-  async completeStep(
-    stepId: string,
-    tenantId: string,
-    estimationValue?: number,
-  ): Promise<WorkflowStepResponseDto> {
-    return this.updateStepStatus(
-      stepId,
-      WorkflowStepStatus.DONE,
-      tenantId,
-      undefined,
-      estimationValue,
-    );
+  async completeStep(stepId: string, tenantId: string, estimationValue?: number): Promise<WorkflowStepResponseDto> {
+    return this.updateStepStatus(stepId, WorkflowStepStatus.DONE, tenantId, undefined, estimationValue);
   }
 
   /**

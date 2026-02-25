@@ -19,7 +19,7 @@ export class SetupService {
     try {
       // Check database connection
       const isConnected = this.dataSource.isInitialized;
-      
+
       // Check if any users exist
       const userCount = await this.usersRepository.count();
       const tenantCount = await this.tenantsRepository.count();
@@ -58,7 +58,7 @@ export class SetupService {
       }
 
       // Create default tenant
-      let existingTenant = await this.tenantsRepository.findOne({ where: { name: 'Demo Tenant' } });
+      const existingTenant = await this.tenantsRepository.findOne({ where: { name: 'Demo Tenant' } });
       let tenant: Tenant;
 
       if (!existingTenant) {

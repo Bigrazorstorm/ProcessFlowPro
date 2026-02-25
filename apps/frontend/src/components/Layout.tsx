@@ -2,14 +2,14 @@ import { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Building2, 
-  FileText, 
-  GitMerge, 
-  CalendarDays, 
-  Bell, 
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
+  FileText,
+  GitMerge,
+  CalendarDays,
+  Bell,
   BarChart3,
   LogOut,
   Settings,
@@ -21,6 +21,7 @@ import {
   Zap,
   FolderOpen,
   Brain,
+  MessageSquare,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
@@ -49,11 +50,16 @@ export default function Layout({ children }: LayoutProps) {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'info': return <Info className="w-4 h-4 text-blue-500 shrink-0" />;
-      case 'success': return <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0" />;
-      case 'error': return <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />;
-      default: return <Bell className="w-4 h-4 text-gray-500 shrink-0" />;
+      case 'info':
+        return <Info className="w-4 h-4 text-blue-500 shrink-0" />;
+      case 'success':
+        return <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />;
+      case 'warning':
+        return <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0" />;
+      case 'error':
+        return <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />;
+      default:
+        return <Bell className="w-4 h-4 text-gray-500 shrink-0" />;
     }
   };
 
@@ -69,11 +75,10 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Workflow-Trigger', href: '/workflow-triggers', icon: Zap },
     { name: 'Dokumente', href: '/documents', icon: FolderOpen },
     { name: 'KI-Unterstützung', href: '/ai-insights', icon: Brain },
+    { name: 'Team-Chat', href: '/chat', icon: MessageSquare },
   ];
 
-  const adminNavigation = [
-    { name: 'Benutzer', href: '/users', icon: Users },
-  ];
+  const adminNavigation = [{ name: 'Benutzer', href: '/users', icon: Users }];
 
   const showAdminNav = user?.role === 'owner' || user?.role === 'senior';
 
@@ -102,10 +107,10 @@ export default function Layout({ children }: LayoutProps) {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                    isActive 
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -129,10 +134,10 @@ export default function Layout({ children }: LayoutProps) {
                       key={item.name}
                       to={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                        isActive 
-                          ? "bg-primary text-primary-foreground" 
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                        isActive
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -149,24 +154,14 @@ export default function Layout({ children }: LayoutProps) {
         <div className="p-4 border-t">
           <div className="flex items-center gap-3 mb-4">
             <Avatar>
-              <AvatarFallback className="bg-primary/10 text-primary">
-                {user?.name?.[0]}
-              </AvatarFallback>
+              <AvatarFallback className="bg-primary/10 text-primary">{user?.name?.[0]}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
-                {user?.name}
-              </p>
-              <p className="text-xs text-muted-foreground truncate capitalize">
-                {user?.role}
-              </p>
+              <p className="text-sm font-medium text-foreground truncate">{user?.name}</p>
+              <p className="text-xs text-muted-foreground truncate capitalize">{user?.role}</p>
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            className="w-full justify-start text-muted-foreground" 
-            onClick={logout}
-          >
+          <Button variant="outline" className="w-full justify-start text-muted-foreground" onClick={logout}>
             <LogOut className="w-4 h-4 mr-2" />
             Abmelden
           </Button>
@@ -210,9 +205,7 @@ export default function Layout({ children }: LayoutProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {recentNotifications.length === 0 ? (
-                  <div className="py-6 text-center text-sm text-muted-foreground">
-                    Keine Benachrichtigungen
-                  </div>
+                  <div className="py-6 text-center text-sm text-muted-foreground">Keine Benachrichtigungen</div>
                 ) : (
                   recentNotifications.map((notification) => (
                     <DropdownMenuItem
@@ -222,16 +215,14 @@ export default function Layout({ children }: LayoutProps) {
                     >
                       {getNotificationIcon(notification.type)}
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium truncate ${!notification.isRead ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <p
+                          className={`text-sm font-medium truncate ${!notification.isRead ? 'text-foreground' : 'text-muted-foreground'}`}
+                        >
                           {notification.title}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate mt-0.5">
-                          {notification.message}
-                        </p>
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">{notification.message}</p>
                       </div>
-                      {!notification.isRead && (
-                        <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />
-                      )}
+                      {!notification.isRead && <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />}
                     </DropdownMenuItem>
                   ))
                 )}
@@ -252,9 +243,7 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Page Content */}
         <div className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+          <div className="max-w-7xl mx-auto">{children}</div>
         </div>
       </main>
     </div>

@@ -1,4 +1,15 @@
-import { IsString, MinLength, IsOptional, IsNumber, Min, IsUUID, IsBoolean, IsArray, ValidateNested, IsDecimal } from 'class-validator';
+import {
+  IsString,
+  MinLength,
+  IsOptional,
+  IsNumber,
+  Min,
+  IsUUID,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsDecimal,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateClientDto {

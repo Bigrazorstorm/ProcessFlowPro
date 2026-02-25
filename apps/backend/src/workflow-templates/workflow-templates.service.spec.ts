@@ -22,37 +22,39 @@ const makeStepsRepo = (overrides: Partial<Record<string, jest.Mock>> = {}) => ({
   ...overrides,
 });
 
-const makeStep = (partial: Partial<TemplateStep> = {}): TemplateStep => ({
-  id: 'step-1',
-  templateId: 'template-1',
-  type: WorkflowStepType.TASK,
-  name: 'Lohnabrechnung erstellen',
-  order: 1,
-  description: undefined,
-  checklist: [],
-  tips: undefined,
-  errors: [],
-  deadlineRule: undefined,
-  assignedRole: undefined,
-  estimationAllowed: false,
-  blocksNext: false,
-  createdAt: new Date('2026-01-01'),
-  updatedAt: new Date('2026-01-01'),
-  ...partial,
-} as TemplateStep);
+const makeStep = (partial: Partial<TemplateStep> = {}): TemplateStep =>
+  ({
+    id: 'step-1',
+    templateId: 'template-1',
+    type: WorkflowStepType.TASK,
+    name: 'Lohnabrechnung erstellen',
+    order: 1,
+    description: undefined,
+    checklist: [],
+    tips: undefined,
+    errors: [],
+    deadlineRule: undefined,
+    assignedRole: undefined,
+    estimationAllowed: false,
+    blocksNext: false,
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+    ...partial,
+  }) as TemplateStep;
 
-const makeTemplate = (partial: Partial<WorkflowTemplate> = {}): WorkflowTemplate => ({
-  id: 'template-1',
-  tenantId: 'tenant-1',
-  name: 'Lohnabrechnung Monatlich',
-  industry: 'Steuerberatung',
-  description: 'Monatlicher Lohnabrechnungsprozess',
-  isActive: true,
-  steps: [],
-  createdAt: new Date('2026-01-01'),
-  updatedAt: new Date('2026-01-01'),
-  ...partial,
-} as WorkflowTemplate);
+const makeTemplate = (partial: Partial<WorkflowTemplate> = {}): WorkflowTemplate =>
+  ({
+    id: 'template-1',
+    tenantId: 'tenant-1',
+    name: 'Lohnabrechnung Monatlich',
+    industry: 'Steuerberatung',
+    description: 'Monatlicher Lohnabrechnungsprozess',
+    isActive: true,
+    steps: [],
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+    ...partial,
+  }) as WorkflowTemplate;
 
 describe('WorkflowTemplatesService', () => {
   let service: WorkflowTemplatesService;
@@ -114,9 +116,7 @@ describe('WorkflowTemplatesService', () => {
 
       const step1 = makeStep({ id: 'step-a', name: 'Schritt 1', order: 1 });
       const step2 = makeStep({ id: 'step-b', name: 'Schritt 2', order: 2, type: WorkflowStepType.APPROVAL });
-      stepsRepo.create
-        .mockReturnValueOnce(step1)
-        .mockReturnValueOnce(step2);
+      stepsRepo.create.mockReturnValueOnce(step1).mockReturnValueOnce(step2);
       stepsRepo.save.mockResolvedValue([step1, step2]);
 
       const result = await service.create(dtoWithSteps, 'tenant-1');
@@ -216,7 +216,11 @@ describe('WorkflowTemplatesService', () => {
       stepsRepo.create.mockReturnValue(newStep);
       stepsRepo.save.mockResolvedValue(newStep);
 
-      const result = await service.addStep('template-1', { name: 'Neuer Schritt', type: WorkflowStepType.TASK }, 'tenant-1');
+      const result = await service.addStep(
+        'template-1',
+        { name: 'Neuer Schritt', type: WorkflowStepType.TASK },
+        'tenant-1',
+      );
 
       expect(stepsRepo.create).toHaveBeenCalledWith(expect.objectContaining({ order: 2 }));
       expect(result.name).toBe('Neuer Schritt');
@@ -258,18 +262,18 @@ describe('WorkflowTemplatesService', () => {
     it('should throw NotFoundException when template does not exist', async () => {
       templatesRepo.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.updateStep('no-such-id', 'step-1', { name: 'X' }, 'tenant-1'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.updateStep('no-such-id', 'step-1', { name: 'X' }, 'tenant-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw NotFoundException when step does not exist', async () => {
       templatesRepo.findOne.mockResolvedValue(makeTemplate());
       stepsRepo.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.updateStep('template-1', 'no-such-step', { name: 'X' }, 'tenant-1'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.updateStep('template-1', 'no-such-step', { name: 'X' }, 'tenant-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

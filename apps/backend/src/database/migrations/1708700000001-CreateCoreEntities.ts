@@ -3,10 +3,18 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class CreateCoreEntities1708700000001 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create ENUM types
-    await queryRunner.query(`CREATE TYPE "user_role_enum" AS ENUM('super_admin', 'owner', 'senior', 'accountant', 'trainee')`);
-    await queryRunner.query(`CREATE TYPE "workflow_step_type_enum" AS ENUM('start', 'end', 'task', 'decision', 'parallel_gateway', 'sync_gateway', 'event', 'subprocess', 'form_input', 'notification', 'approval')`);
-    await queryRunner.query(`CREATE TYPE "workflow_step_status_enum" AS ENUM('open', 'in_progress', 'pending_approval', 'done', 'shifted', 'skipped', 'rejected')`);
-    await queryRunner.query(`CREATE TYPE "workflow_instance_status_enum" AS ENUM('active', 'delayed', 'critical', 'completed', 'archived')`);
+    await queryRunner.query(
+      `CREATE TYPE "user_role_enum" AS ENUM('super_admin', 'owner', 'senior', 'accountant', 'trainee')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "workflow_step_type_enum" AS ENUM('start', 'end', 'task', 'decision', 'parallel_gateway', 'sync_gateway', 'event', 'subprocess', 'form_input', 'notification', 'approval')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "workflow_step_status_enum" AS ENUM('open', 'in_progress', 'pending_approval', 'done', 'shifted', 'skipped', 'rejected')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "workflow_instance_status_enum" AS ENUM('active', 'delayed', 'critical', 'completed', 'archived')`,
+    );
 
     // Create tenants table
     await queryRunner.query(`
@@ -126,7 +134,9 @@ export class CreateCoreEntities1708700000001 implements MigrationInterface {
         UNIQUE("tenantId", "clientId", "periodYear", "periodMonth")
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_workflow_instances_tenantId_status" ON "workflow_instances"("tenantId", "status")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_workflow_instances_tenantId_status" ON "workflow_instances"("tenantId", "status")`,
+    );
     await queryRunner.query(`CREATE INDEX "IDX_workflow_instances_clientId" ON "workflow_instances"("clientId")`);
 
     // Create workflow_steps table
@@ -150,7 +160,9 @@ export class CreateCoreEntities1708700000001 implements MigrationInterface {
         FOREIGN KEY ("assignedUserId") REFERENCES "users"("id") ON DELETE SET NULL
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_workflow_steps_instanceId_status" ON "workflow_steps"("instanceId", "status")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_workflow_steps_instanceId_status" ON "workflow_steps"("instanceId", "status")`,
+    );
     await queryRunner.query(`CREATE INDEX "IDX_workflow_steps_assignedUserId" ON "workflow_steps"("assignedUserId")`);
 
     // Create step_comments table
@@ -184,7 +196,9 @@ export class CreateCoreEntities1708700000001 implements MigrationInterface {
         FOREIGN KEY ("referenceId") REFERENCES "workflow_steps"("id") ON DELETE CASCADE
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_attachments_referenceType_referenceId" ON "attachments"("referenceType", "referenceId")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_attachments_referenceType_referenceId" ON "attachments"("referenceType", "referenceId")`,
+    );
 
     // Create audit_logs table
     await queryRunner.query(`
@@ -205,8 +219,12 @@ export class CreateCoreEntities1708700000001 implements MigrationInterface {
         FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL
       )
     `);
-    await queryRunner.query(`CREATE INDEX "IDX_audit_logs_tenantId_createdAt" ON "audit_logs"("tenantId", "createdAt")`);
-    await queryRunner.query(`CREATE INDEX "IDX_audit_logs_entityType_entityId" ON "audit_logs"("entityType", "entityId")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_audit_logs_tenantId_createdAt" ON "audit_logs"("tenantId", "createdAt")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_audit_logs_entityType_entityId" ON "audit_logs"("entityType", "entityId")`,
+    );
     await queryRunner.query(`CREATE INDEX "IDX_audit_logs_userId" ON "audit_logs"("userId")`);
 
     // Add constraint to make audit logs immutable

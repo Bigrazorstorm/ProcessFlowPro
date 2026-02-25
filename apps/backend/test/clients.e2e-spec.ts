@@ -42,12 +42,10 @@ describe('Clients E2E', () => {
     await userRepo.save(ownerUser);
 
     // Login to get token
-    const loginRes = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'owner@test.com',
-        password: 'TestPassword123',
-      });
+    const loginRes = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'owner@test.com',
+      password: 'TestPassword123',
+    });
 
     ownerToken = loginRes.body.accessToken;
   });
@@ -77,14 +75,11 @@ describe('Clients E2E', () => {
     });
 
     it('should reject duplicate client name in tenant', async () => {
-      await request(app.getHttpServer())
-        .post('/clients')
-        .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          name: 'Unique Company',
-          industry: 'Tech',
-          employeeCount: 20,
-        });
+      await request(app.getHttpServer()).post('/clients').set('Authorization', `Bearer ${ownerToken}`).send({
+        name: 'Unique Company',
+        industry: 'Tech',
+        employeeCount: 20,
+      });
 
       const res = await request(app.getHttpServer())
         .post('/clients')
@@ -101,9 +96,7 @@ describe('Clients E2E', () => {
 
   describe('GET /clients', () => {
     it('should list all clients in tenant', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/clients')
-        .set('Authorization', `Bearer ${ownerToken}`);
+      const res = await request(app.getHttpServer()).get('/clients').set('Authorization', `Bearer ${ownerToken}`);
 
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);

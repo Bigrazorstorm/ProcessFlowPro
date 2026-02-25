@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  Body,
-  UseGuards,
-  Req,
-  Query,
-  Patch,
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards, Req, Query, Patch } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { WorkflowInstancesService } from './workflow-instances.service';
@@ -32,10 +22,7 @@ export class WorkflowInstancesController {
    */
   @Post()
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async create(
-    @Body() createDto: CreateWorkflowInstanceDto,
-    @Req() req: Request,
-  ) {
+  async create(@Body() createDto: CreateWorkflowInstanceDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.workflowInstancesService.createInstanceFromTemplate(createDto, tenantId);
   }
@@ -44,11 +31,7 @@ export class WorkflowInstancesController {
    * Get all workflow instances in tenant
    */
   @Get()
-  async findAll(
-    @Req() req: Request,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
+  async findAll(@Req() req: Request, @Query('page') page?: string, @Query('limit') limit?: string) {
     const tenantId = (req as any).user.tenantId;
     const pageNum = page ? parseInt(page) : 1;
     const limitNum = limit ? parseInt(limit) : 20;
@@ -60,10 +43,7 @@ export class WorkflowInstancesController {
    * Get workflow instance by ID
    */
   @Get(':id')
-  async findOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ) {
+  async findOne(@Param('id') id: string, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.workflowInstancesService.findOne(id, tenantId);
   }
@@ -73,10 +53,7 @@ export class WorkflowInstancesController {
    */
   @Post('trigger/monthly')
   @Roles(UserRole.OWNER)
-  async triggerMonthlyCreation(
-    @Body() triggerDto: TriggerMonthlyInstancesDto,
-    @Req() req: Request,
-  ) {
+  async triggerMonthlyCreation(@Body() triggerDto: TriggerMonthlyInstancesDto, @Req() req: Request) {
     const tenantId = triggerDto.tenantId || (req as any).user.tenantId;
     const count = await this.workflowInstancesService.scheduleMonthlyInstances(tenantId);
     return { message: 'Monthly instances created', count };
@@ -86,11 +63,7 @@ export class WorkflowInstancesController {
    * Start a workflow step
    */
   @Patch(':instanceId/steps/:stepId/start')
-  async startStep(
-    @Param('instanceId') instanceId: string,
-    @Param('stepId') stepId: string,
-    @Req() req: Request,
-  ) {
+  async startStep(@Param('instanceId') instanceId: string, @Param('stepId') stepId: string, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -109,10 +82,6 @@ export class WorkflowInstancesController {
   ) {
     const tenantId = (req as any).user.tenantId;
 
-    return this.workflowInstancesService.completeStep(
-      stepId,
-      tenantId,
-      body?.estimationValue,
-    );
+    return this.workflowInstancesService.completeStep(stepId, tenantId, body?.estimationValue);
   }
 }

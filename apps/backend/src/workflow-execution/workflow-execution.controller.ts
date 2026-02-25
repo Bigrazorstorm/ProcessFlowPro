@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Patch,
-  Post,
-  Param,
-  Body,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Patch, Post, Param, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { WorkflowExecutionService } from './workflow-execution.service';
@@ -38,10 +29,7 @@ export class WorkflowExecutionController {
    * Get step detail with all comments
    */
   @Get('steps/:stepId')
-  async getStep(
-    @Param('stepId') stepId: string,
-    @Req() req: Request,
-  ) {
+  async getStep(@Param('stepId') stepId: string, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.executionService.getStepDetail(stepId, tenantId);
   }
@@ -50,11 +38,7 @@ export class WorkflowExecutionController {
    * Update step status
    */
   @Patch('steps/:stepId/status')
-  async updateStepStatus(
-    @Param('stepId') stepId: string,
-    @Body() dto: UpdateStepStatusDto,
-    @Req() req: Request,
-  ) {
+  async updateStepStatus(@Param('stepId') stepId: string, @Body() dto: UpdateStepStatusDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -65,10 +49,7 @@ export class WorkflowExecutionController {
    * Start a step (move to IN_PROGRESS)
    */
   @Post('steps/:stepId/start')
-  async startStep(
-    @Param('stepId') stepId: string,
-    @Req() req: Request,
-  ) {
+  async startStep(@Param('stepId') stepId: string, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -80,11 +61,7 @@ export class WorkflowExecutionController {
    */
   @Patch('steps/:stepId/assign')
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async assignStep(
-    @Param('stepId') stepId: string,
-    @Body() dto: AssignStepDto,
-    @Req() req: Request,
-  ) {
+  async assignStep(@Param('stepId') stepId: string, @Body() dto: AssignStepDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.executionService.assignStep(stepId, tenantId, dto);
   }
@@ -93,11 +70,7 @@ export class WorkflowExecutionController {
    * Log time on a step
    */
   @Post('steps/:stepId/log-time')
-  async logTime(
-    @Param('stepId') stepId: string,
-    @Body() dto: LogTimeDto,
-    @Req() req: Request,
-  ) {
+  async logTime(@Param('stepId') stepId: string, @Body() dto: LogTimeDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -108,11 +81,7 @@ export class WorkflowExecutionController {
    * Set estimation for a step
    */
   @Post('steps/:stepId/estimation')
-  async setEstimation(
-    @Param('stepId') stepId: string,
-    @Body() dto: EstimationDto,
-    @Req() req: Request,
-  ) {
+  async setEstimation(@Param('stepId') stepId: string, @Body() dto: EstimationDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -124,11 +93,7 @@ export class WorkflowExecutionController {
    */
   @Post('steps/:stepId/approve')
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async approveStep(
-    @Param('stepId') stepId: string,
-    @Body() dto: ApproveStepDto,
-    @Req() req: Request,
-  ) {
+  async approveStep(@Param('stepId') stepId: string, @Body() dto: ApproveStepDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -140,11 +105,7 @@ export class WorkflowExecutionController {
    */
   @Post('steps/:stepId/reject')
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async rejectStep(
-    @Param('stepId') stepId: string,
-    @Body() dto: RejectStepDto,
-    @Req() req: Request,
-  ) {
+  async rejectStep(@Param('stepId') stepId: string, @Body() dto: RejectStepDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -155,11 +116,7 @@ export class WorkflowExecutionController {
    * Shift the due date of a step (used for calendar drag & drop)
    */
   @Patch('steps/:stepId/shift-date')
-  async shiftStepDate(
-    @Param('stepId') stepId: string,
-    @Body() dto: ShiftStepDateDto,
-    @Req() req: Request,
-  ) {
+  async shiftStepDate(@Param('stepId') stepId: string, @Body() dto: ShiftStepDateDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.executionService.shiftStepDate(stepId, tenantId, dto);
   }
@@ -168,11 +125,7 @@ export class WorkflowExecutionController {
    * Add comment to step
    */
   @Post('steps/:stepId/comments')
-  async addComment(
-    @Param('stepId') stepId: string,
-    @Body() dto: AddStepCommentDto,
-    @Req() req: Request,
-  ) {
+  async addComment(@Param('stepId') stepId: string, @Body() dto: AddStepCommentDto, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     const userId = (req as any).user.userId;
 
@@ -183,10 +136,7 @@ export class WorkflowExecutionController {
    * Get all comments for a step
    */
   @Get('steps/:stepId/comments')
-  async getComments(
-    @Param('stepId') stepId: string,
-    @Req() req: Request,
-  ) {
+  async getComments(@Param('stepId') stepId: string, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.executionService.getStepComments(stepId, tenantId);
   }
@@ -195,10 +145,7 @@ export class WorkflowExecutionController {
    * Get workflow instance progress
    */
   @Get('instances/:instanceId/progress')
-  async getProgress(
-    @Param('instanceId') instanceId: string,
-    @Req() req: Request,
-  ) {
+  async getProgress(@Param('instanceId') instanceId: string, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.executionService.getWorkflowProgress(instanceId, tenantId);
   }

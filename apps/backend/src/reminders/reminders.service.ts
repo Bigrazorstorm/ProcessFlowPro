@@ -53,9 +53,7 @@ export class RemindersService {
       // Skip already passed dates (those are handled by escalation)
       if (step.dueDate < now) continue;
 
-      const daysLeft = Math.ceil(
-        (step.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-      );
+      const daysLeft = Math.ceil((step.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
       const user = step.assignedUser;
       const stepName = step.templateStep?.name ?? 'Aufgabe';
@@ -110,9 +108,7 @@ export class RemindersService {
     for (const step of overdueSteps) {
       if (!step.dueDate || !step.assignedUser) continue;
 
-      const overdueDays = Math.ceil(
-        (now.getTime() - step.dueDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
+      const overdueDays = Math.ceil((now.getTime() - step.dueDate.getTime()) / (1000 * 60 * 60 * 24));
 
       const user = step.assignedUser;
       const stepName = step.templateStep?.name ?? 'Aufgabe';

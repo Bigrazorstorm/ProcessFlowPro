@@ -34,6 +34,7 @@ import { WebsocketsModule } from './websockets/websockets.module';
 import { WorkflowTriggersModule } from './workflow-triggers/workflow-triggers.module';
 import { DocumentsModule } from './documents/documents.module';
 import { AiSuggestionsModule } from './ai-suggestions/ai-suggestions.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -51,7 +52,18 @@ import { AiSuggestionsModule } from './ai-suggestions/ai-suggestions.module';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [Tenant, User, Client, WorkflowTemplate, TemplateStep, WorkflowInstance, WorkflowStep, StepComment, Attachment, AuditLog],
+        entities: [
+          Tenant,
+          User,
+          Client,
+          WorkflowTemplate,
+          TemplateStep,
+          WorkflowInstance,
+          WorkflowStep,
+          StepComment,
+          Attachment,
+          AuditLog,
+        ],
         migrations: ['dist/database/migrations/*.js'],
         synchronize: false,
         logging: process.env.NODE_ENV === 'development',
@@ -86,6 +98,7 @@ import { AiSuggestionsModule } from './ai-suggestions/ai-suggestions.module';
     WorkflowTriggersModule,
     DocumentsModule,
     AiSuggestionsModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],

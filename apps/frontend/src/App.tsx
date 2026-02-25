@@ -16,6 +16,7 @@ import TeamCalendar from './pages/TeamCalendar';
 import WorkflowTriggers from './pages/WorkflowTriggers';
 import Documents from './pages/Documents';
 import AiInsights from './pages/AiInsights';
+import Chat from './pages/Chat';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -133,6 +134,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AiInsights />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <Chat />
               </ProtectedRoute>
             }
           />

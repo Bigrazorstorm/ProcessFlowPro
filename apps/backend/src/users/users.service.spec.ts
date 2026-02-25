@@ -12,21 +12,22 @@ const makeRepository = (overrides: Partial<Record<string, jest.Mock>> = {}) => (
   ...overrides,
 });
 
-const makeUser = (partial: Partial<User> = {}): User => ({
-  id: 'user-id-1',
-  tenantId: 'tenant-1',
-  name: 'Test User',
-  email: 'test@example.com',
-  passwordHash: '$2b$10$hashedpassword',
-  role: UserRole.ACCOUNTANT,
-  capacityPointsLimit: 100,
-  isActive: true,
-  primarySubstituteId: undefined,
-  secondarySubstituteId: undefined,
-  createdAt: new Date('2026-01-01'),
-  updatedAt: new Date('2026-01-01'),
-  ...partial,
-} as User);
+const makeUser = (partial: Partial<User> = {}): User =>
+  ({
+    id: 'user-id-1',
+    tenantId: 'tenant-1',
+    name: 'Test User',
+    email: 'test@example.com',
+    passwordHash: '$2b$10$hashedpassword',
+    role: UserRole.ACCOUNTANT,
+    capacityPointsLimit: 100,
+    isActive: true,
+    primarySubstituteId: undefined,
+    secondarySubstituteId: undefined,
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+    ...partial,
+  }) as User;
 
 describe('UsersService', () => {
   let service: UsersService;

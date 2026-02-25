@@ -9,15 +9,7 @@ import { Client } from '../database/entities/client.entity';
 import { WorkflowTemplate } from '../database/entities/workflow-template.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      WorkflowInstance,
-      WorkflowStep,
-      User,
-      Client,
-      WorkflowTemplate,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([WorkflowInstance, WorkflowStep, User, Client, WorkflowTemplate])],
   controllers: [ReportingController],
   providers: [ReportingService],
   exports: [ReportingService],

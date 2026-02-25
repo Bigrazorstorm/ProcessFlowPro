@@ -18,10 +18,7 @@ export class WorkflowTemplatesService {
     private readonly stepsRepository: Repository<TemplateStep>,
   ) {}
 
-  async create(
-    createTemplateDto: CreateWorkflowTemplateDto,
-    tenantId: string,
-  ): Promise<WorkflowTemplateResponseDto> {
+  async create(createTemplateDto: CreateWorkflowTemplateDto, tenantId: string): Promise<WorkflowTemplateResponseDto> {
     // Check if template with same name exists in this tenant
     const existing = await this.templatesRepository.findOne({
       where: { name: createTemplateDto.name, tenantId },
@@ -141,8 +138,7 @@ export class WorkflowTemplatesService {
     }
 
     // Get next order number
-    const maxOrder =
-      template.steps.length > 0 ? Math.max(...template.steps.map((s) => s.order)) : 0;
+    const maxOrder = template.steps.length > 0 ? Math.max(...template.steps.map((s) => s.order)) : 0;
 
     const step = this.stepsRepository.create({
       ...stepDto,
@@ -185,11 +181,7 @@ export class WorkflowTemplatesService {
     return this.stepToResponseDto(step);
   }
 
-  async deleteStep(
-    templateId: string,
-    stepId: string,
-    tenantId: string,
-  ): Promise<void> {
+  async deleteStep(templateId: string, stepId: string, tenantId: string): Promise<void> {
     const template = await this.templatesRepository.findOne({
       where: { id: templateId, tenantId },
     });
@@ -221,11 +213,7 @@ export class WorkflowTemplatesService {
     await this.stepsRepository.save(remainingSteps);
   }
 
-  async reorderSteps(
-    templateId: string,
-    stepIds: string[],
-    tenantId: string,
-  ): Promise<TemplateStepResponseDto[]> {
+  async reorderSteps(templateId: string, stepIds: string[], tenantId: string): Promise<TemplateStepResponseDto[]> {
     const template = await this.templatesRepository.findOne({
       where: { id: templateId, tenantId },
     });
