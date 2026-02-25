@@ -181,6 +181,15 @@ export function useTemplates() {
     }
   };
 
+  const reorderSteps = async (templateId: string, stepIds: string[]): Promise<void> => {
+    try {
+      await api.post(`/workflow-templates/${templateId}/steps/reorder`, { stepIds });
+      await loadTemplates();
+    } catch (err: any) {
+      throw new Error(err.response?.data?.message || 'Fehler beim Neuordnen der Steps');
+    }
+  };
+
   const reload = () => {
     loadTemplates();
   };
@@ -196,5 +205,6 @@ export function useTemplates() {
     addStep,
     updateStep,
     deleteStep,
+    reorderSteps,
   };
 }

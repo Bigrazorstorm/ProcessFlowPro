@@ -337,19 +337,6 @@ export default function StepModal({ isOpen, onClose, onSave, step }: StepModalPr
             <div className="flex items-center">
               <input
                 type="checkbox"
-                id="estimationAllowed"
-                checked={formData.estimationAllowed}
-                onChange={(e) => setFormData({ ...formData, estimationAllowed: e.target.checked })}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="estimationAllowed" className="ml-2 block text-sm text-gray-900">
-                Zeitschätzung erlauben
-              </label>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
                 id="blocksNext"
                 checked={formData.blocksNext}
                 onChange={(e) => setFormData({ ...formData, blocksNext: e.target.checked })}
