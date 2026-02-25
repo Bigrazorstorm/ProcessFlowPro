@@ -42,7 +42,7 @@ export default function Workflows() {
       {
         id: '1',
         name: 'Jahresabschluss 2023',
-        clientName: 'Müller GmbH',
+        clientName: 'MÃ¼ller GmbH',
         status: 'in_progress',
         progress: 65,
         dueDate: '2024-06-30',
@@ -59,7 +59,7 @@ export default function Workflows() {
       },
       {
         id: '3',
-        name: 'Lohnabrechnung März',
+        name: 'Lohnabrechnung MÃ¤rz',
         clientName: 'Weber IT Solutions',
         status: 'completed',
         progress: 100,
@@ -69,7 +69,7 @@ export default function Workflows() {
       {
         id: '4',
         name: 'Umsatzsteuervoranmeldung Q1',
-        clientName: 'Müller GmbH',
+        clientName: 'MÃ¼ller GmbH',
         status: 'blocked',
         progress: 30,
         dueDate: '2024-04-10',
@@ -104,7 +104,7 @@ export default function Workflows() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Workflows</h1>
           <p className="text-muted-foreground mt-1">
-            Verwalten und überwachen Sie alle laufenden Prozesse.
+            Verwalten und Ã¼berwachen Sie alle laufenden Prozesse.
           </p>
         </div>
         <Button>
@@ -138,7 +138,7 @@ export default function Workflows() {
                   <TableHead>Mandant</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Fortschritt</TableHead>
-                  <TableHead>Fällig am</TableHead>
+                  <TableHead>FÃ¤llig am</TableHead>
                   <TableHead className="text-right">Aktionen</TableHead>
                 </TableRow>
               </TableHeader>
@@ -191,13 +191,13 @@ export default function Workflows() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Menü öffnen</span>
+                              <span className="sr-only">MenÃ¼ Ã¶ffnen</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Aktionen</DropdownMenuLabel>
-                            <DropdownMenuItem>Öffnen</DropdownMenuItem>
+                            <DropdownMenuItem>Ã–ffnen</DropdownMenuItem>
                             <DropdownMenuItem>Bearbeiten</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive">
