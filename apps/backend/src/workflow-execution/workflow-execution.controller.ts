@@ -1,4 +1,5 @@
-import { Controller, Get, Patch, Post, Param, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Param, Body, UseGuards, Req, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { WorkflowExecutionService } from './workflow-execution.service';
@@ -54,6 +55,17 @@ export class WorkflowExecutionController {
     const userId = (req as any).user.userId;
 
     return this.executionService.startStep(stepId, tenantId, userId);
+  }
+
+  /**
+   * Complete a step (move to DONE)
+   */
+  @Post('steps/:stepId/complete')
+  async completeStep(@Param('stepId') stepId: string, @Req() req: Request) {
+    const tenantId = (req as any).user.tenantId;
+    const userId = (req as any).user.userId;
+
+    return this.executionService.completeStep(stepId, tenantId, userId);
   }
 
   /**
@@ -148,5 +160,42 @@ export class WorkflowExecutionController {
   async getProgress(@Param('instanceId') instanceId: string, @Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.executionService.getWorkflowProgress(instanceId, tenantId);
+  }
+
+  /**
+   * Upload attachments to a step
+   */
+  @Post('steps/:stepId/attachments')
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'files', maxCount: 10 }
+  ], {
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  }))
+  async uploadAttachments(
+    @Param('stepId') stepId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Req() req: Request,
+  ) {
+    const tenantId = (req as any).user.tenantId;
+    const userId = (req as any).user.userId;
+    return this.executionService.uploadAttachments(stepId, tenantId, userId, files || []);
+  }
+
+  /**
+   * Get attachments for a step
+   */
+  @Get('steps/:stepId/attachments')
+  async getAttachments(@Param('stepId') stepId: string, @Req() req: Request) {
+    const tenantId = (req as any).user.tenantId;
+    return this.executionService.getAttachments(stepId, tenantId);
+  }
+
+  /**
+   * Download an attachment
+   */
+  @Get('attachments/:attachmentId/download')
+  async downloadAttachment(@Param('attachmentId') attachmentId: string, @Req() req: Request) {
+    const tenantId = (req as any).user.tenantId;
+    return this.executionService.downloadAttachment(attachmentId, tenantId);
   }
 }

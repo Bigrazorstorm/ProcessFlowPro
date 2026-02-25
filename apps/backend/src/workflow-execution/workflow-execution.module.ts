@@ -4,6 +4,7 @@ import { WorkflowStep } from '../database/entities/workflow-step.entity';
 import { StepComment } from '../database/entities/step-comment.entity';
 import { WorkflowInstance } from '../database/entities/workflow-instance.entity';
 import { User } from '../database/entities/user.entity';
+import { Attachment } from '../database/entities/attachment.entity';
 import { WorkflowExecutionService } from './workflow-execution.service';
 import { WorkflowExecutionController } from './workflow-execution.controller';
 import { AuthModule } from '../auth/auth.module';
@@ -11,7 +12,7 @@ import { WorkflowTriggersModule } from '../workflow-triggers/workflow-triggers.m
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([WorkflowStep, StepComment, WorkflowInstance, User]),
+    TypeOrmModule.forFeature([WorkflowStep, StepComment, WorkflowInstance, User, Attachment]),
     AuthModule,
     WorkflowTriggersModule,
   ],

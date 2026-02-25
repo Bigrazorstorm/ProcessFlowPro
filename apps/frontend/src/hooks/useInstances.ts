@@ -134,11 +134,11 @@ export function useInstances() {
     }
   };
 
-  const completeStep = async (stepId: string, estimationValue?: number): Promise<WorkflowStep> => {
+  const completeStep = async (stepId: string): Promise<WorkflowStep> => {
     try {
       const response = await api.post<WorkflowStep>(
         `/workflow-execution/steps/${stepId}/complete`,
-        estimationValue ? { estimationValue } : {}
+        {}
       );
       await loadInstances(); // Reload to reflect changes
       return response.data;

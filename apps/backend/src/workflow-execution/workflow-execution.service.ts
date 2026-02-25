@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as fs from 'fs';
+import * as path from 'path';
 import { WorkflowStep, WorkflowStepStatus } from '../database/entities/workflow-step.entity';
 import { StepComment } from '../database/entities/step-comment.entity';
 import { WorkflowInstance } from '../database/entities/workflow-instance.entity';
 import { User } from '../database/entities/user.entity';
+import { Attachment } from '../database/entities/attachment.entity';
 import {
   UpdateStepStatusDto,
   AssignStepDto,
@@ -34,6 +37,8 @@ export class WorkflowExecutionService {
     private readonly instancesRepository: Repository<WorkflowInstance>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(Attachment)
+    private readonly attachmentsRepository: Repository<Attachment>,
     @Optional() private readonly triggersService?: WorkflowTriggersService,
   ) {}
 
@@ -190,6 +195,45 @@ export class WorkflowExecutionService {
     });
 
     return this.toResponseDto(fullStep!);
+  }
+
+  /**
+   * Complete a step (move to DONE)
+   */
+  async completeStep(stepId: string, tenantId: string, userId: string): Promise<StepExecutionResponseDto> {
+    const step = await this.stepsRepository.findOne({
+      where: { id: stepId },
+      relations: ['instance'],
+    });
+
+    if (!step || step.instance.tenantId !== tenantId) {
+      throw new NotFoundException('Step not found');
+    }
+
+    // Can only complete from IN_PROGRESS or PENDING_APPROVAL status
+    if (![WorkflowStepStatus.IN_PROGRESS, WorkflowStepStatus.PENDING_APPROVAL].includes(step.status)) {
+      throw new BadRequestException(`Cannot complete step with status ${step.status}`);
+    }
+
+    step.status = WorkflowStepStatus.DONE as any;
+    step.completedAt = new Date();
+
+    await this.stepsRepository.save(step);
+
+    // Fire step.completed trigger
+    void this.triggersService?.fire(TriggerEvent.STEP_COMPLETED, {
+      tenantId,
+      userId,
+      stepId,
+      instanceId: step.instanceId,
+    });
+
+    const completedStep = await this.stepsRepository.findOne({
+      where: { id: stepId },
+      relations: ['comments'],
+    });
+
+    return this.toResponseDto(completedStep!);
   }
 
   /**
@@ -476,6 +520,129 @@ export class WorkflowExecutionService {
       inProgressSteps,
       percentComplete,
       steps: detailedSteps.map((s) => this.toResponseDto(s!)),
+    };
+  }
+
+  /**
+   * Upload attachments to a step
+   */
+  async uploadAttachments(
+    stepId: string,
+    tenantId: string,
+    userId: string,
+    files: Express.Multer.File[],
+  ) {
+    // Verify step exists and belongs to tenant
+    const step = await this.stepsRepository.findOne({
+      where: { id: stepId },
+      relations: ['instance'],
+    });
+
+    if (!step || step.instance.tenantId !== tenantId) {
+      throw new NotFoundException('Step not found');
+    }
+
+    const attachments: Attachment[] = [];
+
+    // Create uploads directory if it doesn't exist
+    const uploadDir = path.join(process.cwd(), 'uploads', 'step-attachments', stepId);
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    for (const file of files) {
+      // Generate unique filename
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+      const ext = path.extname(file.originalname);
+      const filename = `${uniqueSuffix}${ext}`;
+      const filepath = path.join(uploadDir, filename);
+
+      // Save file to disk
+      fs.writeFileSync(filepath, file.buffer);
+
+      // Create attachment record
+      const attachment = this.attachmentsRepository.create({
+        referenceType: 'workflow_step',
+        referenceId: stepId,
+        filename: file.originalname,
+        storagePath: `uploads/step-attachments/${stepId}/${filename}`,
+        uploadedByUserId: userId,
+        fileSize: file.size,
+        mimeType: file.mimetype,
+      });
+
+      const saved = await this.attachmentsRepository.save(attachment);
+      attachments.push(saved);
+    }
+
+    return attachments;
+  }
+
+  /**
+   * Get attachments for a step
+   */
+  async getAttachments(stepId: string, tenantId: string) {
+    // Verify step exists and belongs to tenant
+    const step = await this.stepsRepository.findOne({
+      where: { id: stepId },
+      relations: ['instance'],
+    });
+
+    if (!step || step.instance.tenantId !== tenantId) {
+      throw new NotFoundException('Step not found');
+    }
+
+    const attachments = await this.attachmentsRepository.find({
+      where: {
+        referenceType: 'workflow_step',
+        referenceId: stepId,
+      },
+      order: { uploadedAt: 'DESC' },
+    });
+
+    return attachments.map(a => ({
+      id: a.id,
+      filename: a.filename,
+      mimeType: a.mimeType,
+      fileSize: a.fileSize,
+      uploadedAt: a.uploadedAt,
+    }));
+  }
+
+  /**
+   * Download an attachment
+   */
+  async downloadAttachment(attachmentId: string, tenantId: string) {
+    const attachment = await this.attachmentsRepository.findOne({
+      where: { id: attachmentId },
+    });
+
+    if (!attachment) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    // Verify the step belongs to the tenant
+    const step = await this.stepsRepository.findOne({
+      where: { id: attachment.referenceId },
+      relations: ['instance'],
+    });
+
+    if (!step || step.instance.tenantId !== tenantId) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    const filepath = path.join(process.cwd(), attachment.storagePath);
+    
+    if (!fs.existsSync(filepath)) {
+      throw new NotFoundException('File not found on disk');
+    }
+
+    const fileContent = fs.readFileSync(filepath);
+    
+    return {
+      data: fileContent,
+      filename: attachment.filename,
+      mimeType: attachment.mimeType,
     };
   }
 
