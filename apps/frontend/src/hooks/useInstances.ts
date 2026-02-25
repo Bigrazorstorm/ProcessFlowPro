@@ -134,16 +134,31 @@ export function useInstances() {
     }
   };
 
-  const completeStep = async (stepId: string, estimationValue?: number): Promise<WorkflowStep> => {
+  const completeStep = async (stepId: string): Promise<WorkflowStep> => {
     try {
-      const response = await api.post<WorkflowStep>(
-        `/workflow-execution/steps/${stepId}/complete`,
-        estimationValue ? { estimationValue } : {}
+      const response = await api.patch<WorkflowStep>(
+        `/workflow-execution/steps/${stepId}/status`,
+        { status: WorkflowStepStatus.DONE }
       );
-      await loadInstances(); // Reload to reflect changes
+      await loadInstances();
       return response.data;
     } catch (err: any) {
       throw new Error(err.response?.data?.message || 'Fehler beim Abschließen des Steps');
+    }
+  };
+
+  const shiftStepNextMonth = async (stepId: string): Promise<WorkflowStep> => {
+    try {
+      const now = new Date();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const response = await api.patch<WorkflowStep>(
+        `/workflow-execution/steps/${stepId}/shift-date`,
+        { newDueDate: nextMonth.toISOString() }
+      );
+      await loadInstances();
+      return response.data;
+    } catch (err: any) {
+      throw new Error(err.response?.data?.message || 'Fehler beim Verschieben des Steps');
     }
   };
 
@@ -201,6 +216,7 @@ export function useInstances() {
     getProgress,
     startStep,
     completeStep,
+    shiftStepNextMonth,
     updateStepStatus,
     addComment,
     getComments,

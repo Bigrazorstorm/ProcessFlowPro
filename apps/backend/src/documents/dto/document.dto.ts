@@ -13,6 +13,7 @@ export enum DocumentFileType {
 export enum LinkedEntityType {
   CLIENT = 'client',
   WORKFLOW = 'workflow',
+  WORKFLOW_STEP = 'workflow_step',
 }
 
 export class CreateDocumentDto {

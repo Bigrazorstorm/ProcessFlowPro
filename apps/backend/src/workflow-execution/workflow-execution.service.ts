@@ -486,8 +486,10 @@ export class WorkflowExecutionService {
     const allowedTransitions: Record<WorkflowStepStatus, WorkflowStepStatus[]> = {
       [WorkflowStepStatus.OPEN]: [
         WorkflowStepStatus.IN_PROGRESS,
+        WorkflowStepStatus.DONE,
         WorkflowStepStatus.SKIPPED,
         WorkflowStepStatus.SHIFTED,
+        WorkflowStepStatus.REJECTED,
       ],
       [WorkflowStepStatus.IN_PROGRESS]: [
         WorkflowStepStatus.PENDING_APPROVAL,

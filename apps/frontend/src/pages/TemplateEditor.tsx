@@ -6,7 +6,7 @@ import StepModal from '../components/StepModal';
 export default function TemplateEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { templates, loading, addStep, updateStep, deleteStep } = useTemplates();
+  const { templates, loading, addStep, updateStep, deleteStep, reorderSteps } = useTemplates();
   
   const [template, setTemplate] = useState<WorkflowTemplate | null>(null);
   const [isStepModalOpen, setIsStepModalOpen] = useState(false);
@@ -53,6 +53,21 @@ export default function TemplateEditor() {
     try {
       await deleteStep(template.id, stepId);
       setDeleteConfirm(null);
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
+
+  const handleMoveStep = async (stepId: string, direction: 'up' | 'down') => {
+    if (!template) return;
+    const steps = [...template.steps].sort((a, b) => a.order - b.order);
+    const idx = steps.findIndex((s) => s.id === stepId);
+    if (direction === 'up' && idx <= 0) return;
+    if (direction === 'down' && idx >= steps.length - 1) return;
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    [steps[idx], steps[swapIdx]] = [steps[swapIdx], steps[idx]];
+    try {
+      await reorderSteps(template.id, steps.map((s) => s.id));
     } catch (error: any) {
       alert(error.message);
     }
@@ -239,11 +254,6 @@ export default function TemplateEditor() {
                                 Blockiert nächste Steps
                               </span>
                             )}
-                            {step.estimationAllowed && (
-                              <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded">
-                                Schätzung erlaubt
-                              </span>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -293,6 +303,26 @@ export default function TemplateEditor() {
 
                       {/* Actions */}
                       <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => handleMoveStep(step.id, 'up')}
+                          disabled={index === 0}
+                          className="p-1.5 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200 disabled:opacity-30"
+                          title="Nach oben"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleMoveStep(step.id, 'down')}
+                          disabled={index === template.steps.length - 1}
+                          className="p-1.5 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200 disabled:opacity-30"
+                          title="Nach unten"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
                         <button
                           onClick={() => handleEditStep(step)}
                           className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100"
