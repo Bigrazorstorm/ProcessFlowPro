@@ -32,9 +32,7 @@ export class DashboardController {
    */
   @Get()
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async getTenantDashboard(
-    @Req() req: Request,
-  ) {
+  async getTenantDashboard(@Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getTenantDashboard(tenantId);
   }
@@ -43,9 +41,7 @@ export class DashboardController {
    * Get high-level metrics only
    */
   @Get('metrics')
-  async getMetrics(
-    @Req() req: Request,
-  ) {
+  async getMetrics(@Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getMetrics(tenantId);
   }
@@ -55,9 +51,7 @@ export class DashboardController {
    */
   @Get('workload')
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async getUserWorkload(
-    @Req() req: Request,
-  ) {
+  async getUserWorkload(@Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getUserWorkload(tenantId);
   }
@@ -67,9 +61,7 @@ export class DashboardController {
    */
   @Get('clients')
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async getClientProgress(
-    @Req() req: Request,
-  ) {
+  async getClientProgress(@Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getClientProgress(tenantId);
   }
@@ -79,9 +71,7 @@ export class DashboardController {
    */
   @Get('workflows')
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async getWorkflowMetrics(
-    @Req() req: Request,
-  ) {
+  async getWorkflowMetrics(@Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getWorkflowMetrics(tenantId);
   }
@@ -90,9 +80,7 @@ export class DashboardController {
    * Get aggregated stats for the dashboard stats widget
    */
   @Get('stats')
-  async getStats(
-    @Req() req: Request,
-  ) {
+  async getStats(@Req() req: Request) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getStats(tenantId);
   }
@@ -104,19 +92,17 @@ export class DashboardController {
   async getUpcomingDeadlines(
     @Req() req: Request,
     @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
+    @Query('userId') userId?: string,
   ) {
     const tenantId = (req as any).user.tenantId;
-    return this.dashboardService.getUpcomingDeadlines(tenantId, days);
+    return this.dashboardService.getUpcomingDeadlines(tenantId, days, userId);
   }
 
   /**
    * Get recent activity
    */
   @Get('activity')
-  async getRecentActivity(
-    @Req() req: Request,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-  ) {
+  async getRecentActivity(@Req() req: Request, @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number) {
     const tenantId = (req as any).user.tenantId;
     return this.dashboardService.getRecentActivity(tenantId, limit);
   }

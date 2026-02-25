@@ -163,7 +163,7 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - [x] Tagesdetails mit allen Fristen
 - [x] Drag & Drop für Verschiebungen
 - [x] Farbcodierung nach Priorität/Status
-- [ ] Multi-User-Ansicht
+- [x] Multi-User-Ansicht
 
 ### 2.10 Benachrichtigungen ✅
 - [x] Notification-Center im Header
@@ -177,7 +177,7 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - [x] Vorschau-Funktion (Live-Diagramme)
 - [x] Export (PDF, Excel, CSV)
 - [x] Gespeicherte Reports
-- [ ] Automatisierte Reports
+- [x] Automatisierte Reports
 
 ---
 
@@ -218,8 +218,8 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ### 4.1 Backend-Tests
 - [x] Unit-Tests (Jest)
-- [ ] Integration-Tests
-- [ ] E2E-Tests (Supertest)
+- [x] Integration-Tests (E2E: Auth, Users, Clients, Templates, Dashboard)
+- [ ] E2E-Tests (Supertest – weitere Module)
 - [ ] Test-Coverage >80%
 
 ### 4.2 Frontend-Tests
@@ -272,19 +272,18 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ## 📊 Aktueller Status
 
-**Gesamtfortschritt: ~85%**
+**Gesamtfortschritt: ~90%**
 - ✅ Backend: 100% (Phase 1 komplett)
 - ✅ Frontend Grundstruktur: 100% (2.1–2.3)
 - ✅ Frontend Core-Features: 100% (2.4–2.8 komplett)
-- ✅ Frontend Erweiterte Features: 95% (Kalender inkl. Drag & Drop, Benachrichtigungen, Reporting inkl. gespeicherte Reports)
-- 🔄 Testing: 15% (Backend Unit-Tests für Auth, Users, Notifications, DeadlineCalculator)
+- ✅ Frontend Erweiterte Features: 100% (Kalender inkl. Multi-User-Ansicht & Drag & Drop, Benachrichtigungen, Reporting inkl. automatisierte Reports)
+- 🔄 Testing: 35% (Backend Unit-Tests + E2E-Tests für Auth, Users, Clients, Templates, Dashboard)
 - 📋 Production: 0%
 
 **Nächste Schritte:**
-1. Backend Integration-Tests & E2E-Tests (Phase 4.1)
-2. Frontend-Tests (Phase 4.2)
-3. Multi-User-Ansicht im Kalender
-4. Automatisierte Reports (Phase 2.11)
+1. Frontend-Tests (Phase 4.2)
+2. Weitere Backend E2E-Tests (Workflow-Instanzen, Notifications)
+3. Test-Coverage auf >80% erhöhen (Phase 4.1)
 
 ---
 

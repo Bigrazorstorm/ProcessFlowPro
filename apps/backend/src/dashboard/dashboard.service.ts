@@ -124,11 +124,11 @@ export class DashboardService {
     const workload: UserWorkloadDto[] = [];
 
     for (const user of users) {
-const assigned = await this.stepsRepository
-      .createQueryBuilder('step')
-      .where('step.assignedUserId = :userId', { userId: user.id })
-      .andWhere('step.status != :done', { done: WorkflowStepStatus.DONE })
-      .getCount();
+      const assigned = await this.stepsRepository
+        .createQueryBuilder('step')
+        .where('step.assignedUserId = :userId', { userId: user.id })
+        .andWhere('step.status != :done', { done: WorkflowStepStatus.DONE })
+        .getCount();
 
       const completed = await this.stepsRepository
         .createQueryBuilder('step')
@@ -194,9 +194,7 @@ const assigned = await this.stepsRepository
           const completed = steps.filter((s) => s.status === WorkflowStepStatus.DONE).length;
           return steps.length > 0 ? (completed / steps.length) * 100 : 0;
         });
-        totalCompletePercent = Math.round(
-          percentages.reduce((a, b) => a + b, 0) / percentages.length,
-        );
+        totalCompletePercent = Math.round(percentages.reduce((a, b) => a + b, 0) / percentages.length);
       }
 
       const completed = instances.filter((i) => i.status === 'completed').length;
@@ -274,10 +272,18 @@ const assigned = await this.stepsRepository
   async getStats(tenantId: string) {
     // Workflows
     const workflowsTotal = await this.instancesRepository.count({ where: { tenantId } });
-    const workflowsActive = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.ACTIVE } });
-    const workflowsDelayed = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.DELAYED } });
-    const workflowsCritical = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.CRITICAL } });
-    const workflowsCompleted = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.COMPLETED } });
+    const workflowsActive = await this.instancesRepository.count({
+      where: { tenantId, status: WorkflowInstanceStatus.ACTIVE },
+    });
+    const workflowsDelayed = await this.instancesRepository.count({
+      where: { tenantId, status: WorkflowInstanceStatus.DELAYED },
+    });
+    const workflowsCritical = await this.instancesRepository.count({
+      where: { tenantId, status: WorkflowInstanceStatus.CRITICAL },
+    });
+    const workflowsCompleted = await this.instancesRepository.count({
+      where: { tenantId, status: WorkflowInstanceStatus.COMPLETED },
+    });
 
     // Tasks (workflow steps)
     const tasksTotal = await this.stepsRepository
@@ -360,23 +366,28 @@ const assigned = await this.stepsRepository
   /**
    * Get upcoming deadlines within the next N days
    */
-  async getUpcomingDeadlines(tenantId: string, days: number = 7) {
+  async getUpcomingDeadlines(tenantId: string, days: number = 7, userId?: string) {
     const now = new Date();
     const future = new Date(now);
     future.setDate(future.getDate() + days);
 
-    const steps = await this.stepsRepository
+    const query = this.stepsRepository
       .createQueryBuilder('step')
       .leftJoinAndSelect('step.instance', 'instance')
       .leftJoinAndSelect('instance.client', 'client')
       .leftJoinAndSelect('step.templateStep', 'templateStep')
       .leftJoinAndSelect('instance.template', 'template')
+      .leftJoinAndSelect('step.assignedUser', 'assignedUser')
       .where('instance.tenantId = :tenantId', { tenantId })
       .andWhere('step.dueDate >= :now', { now })
       .andWhere('step.dueDate <= :future', { future })
-      .andWhere('step.status != :done', { done: WorkflowStepStatus.DONE })
-      .orderBy('step.dueDate', 'ASC')
-      .getMany();
+      .andWhere('step.status != :done', { done: WorkflowStepStatus.DONE });
+
+    if (userId) {
+      query.andWhere('step.assignedUserId = :userId', { userId });
+    }
+
+    const steps = await query.orderBy('step.dueDate', 'ASC').getMany();
 
     return steps.map((step) => {
       const daysUntilDue = Math.ceil((step.dueDate!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -389,6 +400,8 @@ const assigned = await this.stepsRepository
         dueDate: step.dueDate!.toISOString(),
         status: step.status,
         priority,
+        assignedUserId: step.assignedUserId ?? null,
+        assignedUserName: step.assignedUser?.name ?? null,
       };
     });
   }

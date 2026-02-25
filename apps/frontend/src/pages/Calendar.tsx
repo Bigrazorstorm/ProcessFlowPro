@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, AlertTriangle, Clock, CheckCircle2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertTriangle, Clock, CheckCircle2, X, Users } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { api } from '../lib/api';
 
 interface CalendarDeadline {
@@ -13,6 +14,14 @@ interface CalendarDeadline {
   dueDate: string;
   status: string;
   priority: string;
+  assignedUserId: string | null;
+  assignedUserName: string | null;
+}
+
+interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
 }
 
 export default function Calendar() {
@@ -22,41 +31,60 @@ export default function Calendar() {
   const [loading, setLoading] = useState(true);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverDay, setDragOverDay] = useState<number | null>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string>('all');
 
   const monthNames = [
-    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
+    'Januar',
+    'Februar',
+    'März',
+    'April',
+    'Mai',
+    'Juni',
+    'Juli',
+    'August',
+    'September',
+    'Oktober',
+    'November',
+    'Dezember',
   ];
+
+  const loadTeamMembers = useCallback(async () => {
+    try {
+      const response = await api.get<TeamMember[]>('/users');
+      setTeamMembers(response.data.filter((u) => u.role !== undefined));
+    } catch {
+      setTeamMembers([]);
+    }
+  }, []);
 
   const loadDeadlines = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get<CalendarDeadline[]>('/dashboard/upcoming-deadlines', {
-        params: { days: 60 },
-      });
+      const params: Record<string, any> = { days: 60 };
+      if (selectedUserId !== 'all') {
+        params.userId = selectedUserId;
+      }
+      const response = await api.get<CalendarDeadline[]>('/dashboard/upcoming-deadlines', { params });
       setDeadlines(response.data);
     } catch {
       setDeadlines([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedUserId]);
+
+  useEffect(() => {
+    loadTeamMembers();
+  }, [loadTeamMembers]);
 
   useEffect(() => {
     loadDeadlines();
   }, [loadDeadlines]);
 
-  const daysInMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0,
-  ).getDate();
+  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
 
-  const firstDayOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1,
-  ).getDay();
+  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
 
   const previousMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
@@ -105,11 +133,19 @@ export default function Calendar() {
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
       case 'high':
-        return <Badge variant="destructive" className="text-xs">Hoch</Badge>;
+        return (
+          <Badge variant="destructive" className="text-xs">
+            Hoch
+          </Badge>
+        );
       case 'medium':
         return <Badge className="text-xs bg-yellow-500 hover:bg-yellow-600">Mittel</Badge>;
       default:
-        return <Badge variant="secondary" className="text-xs">Niedrig</Badge>;
+        return (
+          <Badge variant="secondary" className="text-xs">
+            Niedrig
+          </Badge>
+        );
     }
   };
 
@@ -147,11 +183,7 @@ export default function Calendar() {
     const deadline = deadlines.find((d) => d.id === draggedId);
     if (!deadline) return;
 
-    const newDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day,
-    );
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     const currentDeadlineDate = new Date(deadline.dueDate);
 
     // No-op if dropped on the same day
@@ -166,11 +198,7 @@ export default function Calendar() {
 
     // Optimistic update
     setDeadlines((prev) =>
-      prev.map((d) =>
-        d.id === draggedId
-          ? { ...d, dueDate: newDate.toISOString(), status: 'shifted' }
-          : d,
-      ),
+      prev.map((d) => (d.id === draggedId ? { ...d, dueDate: newDate.toISOString(), status: 'shifted' } : d)),
     );
     setDraggedId(null);
 
@@ -196,6 +224,8 @@ export default function Calendar() {
 
   const selectedDayDeadlines = selectedDay !== null ? getDeadlinesForDay(selectedDay) : [];
 
+  const selectedUserName = selectedUserId !== 'all' ? teamMembers.find((m) => m.id === selectedUserId)?.name : null;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -205,7 +235,42 @@ export default function Calendar() {
             Ihre Fristen und Workflow-Deadlines im Überblick. Fristen können per Drag & Drop verschoben werden.
           </p>
         </div>
+        <div className="flex items-center gap-3">
+          <Select
+            value={selectedUserId}
+            onValueChange={(v) => {
+              setSelectedUserId(v);
+              setSelectedDay(null);
+            }}
+          >
+            <SelectTrigger className="w-[200px]">
+              <Users className="w-4 h-4 mr-2 shrink-0" />
+              <SelectValue placeholder="Mitarbeiter filtern" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alle Mitarbeiter</SelectItem>
+              {teamMembers.map((member) => (
+                <SelectItem key={member.id} value={member.id}>
+                  {member.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      {selectedUserName && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Users className="w-4 h-4" />
+          <span>
+            Fristen gefiltert nach: <strong className="text-foreground">{selectedUserName}</strong>
+          </span>
+          <Button variant="ghost" size="sm" className="h-6 px-2" onClick={() => setSelectedUserId('all')}>
+            <X className="w-3 h-3 mr-1" />
+            Filter zurücksetzen
+          </Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <Card className="lg:col-span-3">
@@ -223,7 +288,9 @@ export default function Calendar() {
                 </Button>
               </div>
             </div>
-            <Button variant="outline" onClick={goToToday}>Heute</Button>
+            <Button variant="outline" onClick={goToToday}>
+              Heute
+            </Button>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -287,15 +354,13 @@ export default function Calendar() {
                             className={`text-xs px-1.5 py-0.5 rounded truncate cursor-grab active:cursor-grabbing select-none ${getStatusColor(deadline.status)} ${
                               draggedId === deadline.id ? 'opacity-40' : ''
                             }`}
-                            title={`${deadline.stepName} – ${deadline.clientName}`}
+                            title={`${deadline.stepName} – ${deadline.clientName}${deadline.assignedUserName ? ` (${deadline.assignedUserName})` : ''}`}
                           >
                             {deadline.stepName}
                           </div>
                         ))}
                         {dayDeadlines.length > 2 && (
-                          <div className="text-xs text-muted-foreground px-1">
-                            +{dayDeadlines.length - 2} weitere
-                          </div>
+                          <div className="text-xs text-muted-foreground px-1">+{dayDeadlines.length - 2} weitere</div>
                         )}
                       </div>
                     </div>
@@ -319,9 +384,7 @@ export default function Calendar() {
               </CardHeader>
               <CardContent>
                 {selectedDayDeadlines.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    Keine Fristen an diesem Tag.
-                  </p>
+                  <p className="text-sm text-muted-foreground text-center py-4">Keine Fristen an diesem Tag.</p>
                 ) : (
                   <div className="space-y-3">
                     {selectedDayDeadlines.map((deadline) => (
@@ -335,6 +398,12 @@ export default function Calendar() {
                         </div>
                         <p className="text-xs text-muted-foreground pl-6">{deadline.clientName}</p>
                         <p className="text-xs text-muted-foreground pl-6">{deadline.workflowName}</p>
+                        {deadline.assignedUserName && (
+                          <p className="text-xs text-muted-foreground pl-6 flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {deadline.assignedUserName}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -348,9 +417,7 @@ export default function Calendar() {
               </CardHeader>
               <CardContent>
                 {upcomingDeadlines.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    Keine anstehenden Fristen.
-                  </p>
+                  <p className="text-sm text-muted-foreground text-center py-4">Keine anstehenden Fristen.</p>
                 ) : (
                   <div className="space-y-3">
                     {upcomingDeadlines.map((deadline) => {
@@ -365,6 +432,12 @@ export default function Calendar() {
                           <div className="min-w-0">
                             <p className="font-medium text-sm truncate">{deadline.stepName}</p>
                             <p className="text-xs text-muted-foreground truncate">{deadline.clientName}</p>
+                            {deadline.assignedUserName && (
+                              <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                                <Users className="w-3 h-3" />
+                                {deadline.assignedUserName}
+                              </p>
+                            )}
                           </div>
                         </div>
                       );
@@ -412,4 +485,3 @@ export default function Calendar() {
     </div>
   );
 }
-
