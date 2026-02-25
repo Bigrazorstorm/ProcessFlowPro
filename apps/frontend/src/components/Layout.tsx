@@ -22,6 +22,7 @@ import {
   FolderOpen,
   Brain,
   MessageSquare,
+  PenLine,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
@@ -76,6 +77,7 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Dokumente', href: '/documents', icon: FolderOpen },
     { name: 'KI-Unterstützung', href: '/ai-insights', icon: Brain },
     { name: 'Team-Chat', href: '/chat', icon: MessageSquare },
+    { name: 'Digitale Signaturen', href: '/signatures', icon: PenLine },
   ];
 
   const adminNavigation = [{ name: 'Benutzer', href: '/users', icon: Users }];

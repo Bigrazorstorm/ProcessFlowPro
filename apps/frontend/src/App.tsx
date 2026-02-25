@@ -17,6 +17,7 @@ import WorkflowTriggers from './pages/WorkflowTriggers';
 import Documents from './pages/Documents';
 import AiInsights from './pages/AiInsights';
 import Chat from './pages/Chat';
+import Signatures from './pages/Signatures';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -142,6 +143,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Chat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/signatures"
+            element={
+              <ProtectedRoute>
+                <Signatures />
               </ProtectedRoute>
             }
           />
