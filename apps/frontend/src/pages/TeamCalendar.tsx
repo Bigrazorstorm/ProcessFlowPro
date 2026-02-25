@@ -6,7 +6,6 @@ import {
   Clock,
   CheckCircle2,
   Users,
-  Calendar,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -30,15 +29,6 @@ interface TeamTask {
   assignedUserId: string | null;
   assignedUserName: string | null;
 }
-
-const MEMBER_COLORS = [
-  'bg-blue-100 text-blue-800 border-blue-200',
-  'bg-purple-100 text-purple-800 border-purple-200',
-  'bg-green-100 text-green-800 border-green-200',
-  'bg-orange-100 text-orange-800 border-orange-200',
-  'bg-pink-100 text-pink-800 border-pink-200',
-  'bg-teal-100 text-teal-800 border-teal-200',
-];
 
 const MEMBER_DOT_COLORS = [
   'bg-blue-400',
@@ -267,8 +257,7 @@ export default function TeamCalendar() {
               </tr>
             </thead>
             <tbody>
-              {teamMembers.map((member, memberIdx) => {
-                const colorClass = MEMBER_COLORS[memberIdx % MEMBER_COLORS.length];
+              {teamMembers.map((member) => {
                 const workload = getMemberWorkload(member.id);
 
                 return (

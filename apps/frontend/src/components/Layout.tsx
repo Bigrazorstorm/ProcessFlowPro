@@ -19,6 +19,8 @@ import {
   CheckCircle2,
   CalendarRange,
   Zap,
+  FolderOpen,
+  Brain,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
@@ -65,6 +67,8 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Benachrichtigungen', href: '/notifications', icon: Bell },
     { name: 'Berichte', href: '/reports', icon: BarChart3 },
     { name: 'Workflow-Trigger', href: '/workflow-triggers', icon: Zap },
+    { name: 'Dokumente', href: '/documents', icon: FolderOpen },
+    { name: 'KI-Unterstützung', href: '/ai-insights', icon: Brain },
   ];
 
   const adminNavigation = [
