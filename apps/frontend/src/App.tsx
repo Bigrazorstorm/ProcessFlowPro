@@ -12,6 +12,8 @@ import { InstanceDetail } from './pages/InstanceDetail';
 import Calendar from './pages/Calendar';
 import Notifications from './pages/Notifications';
 import Reports from './pages/Reports';
+import TeamCalendar from './pages/TeamCalendar';
+import WorkflowTriggers from './pages/WorkflowTriggers';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -97,6 +99,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/team-calendar"
+            element={
+              <ProtectedRoute>
+                <TeamCalendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workflow-triggers"
+            element={
+              <ProtectedRoute>
+                <WorkflowTriggers />
               </ProtectedRoute>
             }
           />

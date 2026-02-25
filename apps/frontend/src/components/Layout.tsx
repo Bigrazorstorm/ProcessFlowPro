@@ -17,6 +17,8 @@ import {
   Info,
   AlertTriangle,
   CheckCircle2,
+  CalendarRange,
+  Zap,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
@@ -59,8 +61,10 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Workflow Templates', href: '/templates', icon: FileText },
     { name: 'Workflows', href: '/workflows', icon: GitMerge },
     { name: 'Kalender', href: '/calendar', icon: CalendarDays },
+    { name: 'Teamkalender', href: '/team-calendar', icon: CalendarRange },
     { name: 'Benachrichtigungen', href: '/notifications', icon: Bell },
     { name: 'Berichte', href: '/reports', icon: BarChart3 },
+    { name: 'Workflow-Trigger', href: '/workflow-triggers', icon: Zap },
   ];
 
   const adminNavigation = [

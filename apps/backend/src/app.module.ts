@@ -31,6 +31,7 @@ import { ComplianceModule } from './compliance/compliance.module';
 import { EmailModule } from './email/email.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { WebsocketsModule } from './websockets/websockets.module';
+import { WorkflowTriggersModule } from './workflow-triggers/workflow-triggers.module';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { WebsocketsModule } from './websockets/websockets.module';
     EmailModule,
     RemindersModule,
     WebsocketsModule,
+    WorkflowTriggersModule,
   ],
   controllers: [],
   providers: [],
