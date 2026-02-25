@@ -32,6 +32,8 @@ import { EmailModule } from './email/email.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { WebsocketsModule } from './websockets/websockets.module';
 import { WorkflowTriggersModule } from './workflow-triggers/workflow-triggers.module';
+import { DocumentsModule } from './documents/documents.module';
+import { AiSuggestionsModule } from './ai-suggestions/ai-suggestions.module';
 
 @Module({
   imports: [
@@ -82,6 +84,8 @@ import { WorkflowTriggersModule } from './workflow-triggers/workflow-triggers.mo
     RemindersModule,
     WebsocketsModule,
     WorkflowTriggersModule,
+    DocumentsModule,
+    AiSuggestionsModule,
   ],
   controllers: [],
   providers: [],

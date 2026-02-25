@@ -14,6 +14,8 @@ import Notifications from './pages/Notifications';
 import Reports from './pages/Reports';
 import TeamCalendar from './pages/TeamCalendar';
 import WorkflowTriggers from './pages/WorkflowTriggers';
+import Documents from './pages/Documents';
+import AiInsights from './pages/AiInsights';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -115,6 +117,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <WorkflowTriggers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/documents"
+            element={
+              <ProtectedRoute>
+                <Documents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai-insights"
+            element={
+              <ProtectedRoute>
+                <AiInsights />
               </ProtectedRoute>
             }
           />
