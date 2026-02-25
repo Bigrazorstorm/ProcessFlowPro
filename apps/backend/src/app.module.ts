@@ -35,6 +35,7 @@ import { WorkflowTriggersModule } from './workflow-triggers/workflow-triggers.mo
 import { DocumentsModule } from './documents/documents.module';
 import { AiSuggestionsModule } from './ai-suggestions/ai-suggestions.module';
 import { ChatModule } from './chat/chat.module';
+import { SignaturesModule } from './signatures/signatures.module';
 
 @Module({
   imports: [
@@ -99,6 +100,7 @@ import { ChatModule } from './chat/chat.module';
     DocumentsModule,
     AiSuggestionsModule,
     ChatModule,
+    SignaturesModule,
   ],
   controllers: [],
   providers: [],
