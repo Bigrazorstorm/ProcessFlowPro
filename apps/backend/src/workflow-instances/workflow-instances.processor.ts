@@ -28,11 +28,7 @@ export class WorkflowInstancesProcessor {
   async completeStep(job: Job<{ stepId: string; tenantId: string; actualHours?: number }>) {
     const { stepId, tenantId, actualHours } = job.data;
 
-    const result = await this.workflowInstancesService.completeStep(
-      stepId,
-      tenantId,
-      actualHours,
-    );
+    const result = await this.workflowInstancesService.completeStep(stepId, tenantId, actualHours);
 
     return { stepId, result };
   }

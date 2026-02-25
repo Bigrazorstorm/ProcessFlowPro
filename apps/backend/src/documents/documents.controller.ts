@@ -12,13 +12,7 @@ import {
   HttpStatus,
   Request,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiResponse,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../auth/guards/tenant.guard';
 import { DocumentsService } from './documents.service';
@@ -35,12 +29,7 @@ export class DocumentsController {
   @ApiOperation({ summary: 'Upload / register a new document' })
   @ApiResponse({ status: 201, description: 'Document created successfully' })
   create(@Request() req: any, @Body() dto: CreateDocumentDto) {
-    return this.documentsService.create(
-      req.user.tenantId!,
-      req.user.id,
-      req.user.name || req.user.email,
-      dto,
-    );
+    return this.documentsService.create(req.user.tenantId!, req.user.id, req.user.name || req.user.email, dto);
   }
 
   @Get()
@@ -63,11 +52,7 @@ export class DocumentsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update document metadata' })
-  update(
-    @Request() req: any,
-    @Param('id') id: string,
-    @Body() dto: UpdateDocumentDto,
-  ) {
+  update(@Request() req: any, @Param('id') id: string, @Body() dto: UpdateDocumentDto) {
     return this.documentsService.update(req.user.tenantId!, id, dto);
   }
 

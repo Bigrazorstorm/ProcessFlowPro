@@ -39,9 +39,7 @@ export class NotificationsService {
   private notifications: Map<string, Notification[]> = new Map();
   private preferences: Map<string, NotificationPreference> = new Map();
 
-  constructor(
-    @Optional() private readonly eventsGateway?: EventsGateway,
-  ) {}
+  constructor(@Optional() private readonly eventsGateway?: EventsGateway) {}
 
   /**
    * Create a notification
@@ -168,11 +166,8 @@ export class NotificationsService {
   /**
    * Update notification preferences
    */
-  async updatePreferences(
-    userId: string,
-    dto: UpdateNotificationPreferencesDto,
-  ): Promise<NotificationPreferencesDto> {
-    let prefs = this.preferences.get(userId) || {
+  async updatePreferences(userId: string, dto: UpdateNotificationPreferencesDto): Promise<NotificationPreferencesDto> {
+    const prefs = this.preferences.get(userId) || {
       userId,
       emailOnStepAssigned: true,
       emailOnApprovalRequested: true,
@@ -184,16 +179,11 @@ export class NotificationsService {
     };
 
     if (dto.emailOnStepAssigned !== undefined) prefs.emailOnStepAssigned = dto.emailOnStepAssigned;
-    if (dto.emailOnApprovalRequested !== undefined)
-      prefs.emailOnApprovalRequested = dto.emailOnApprovalRequested;
-    if (dto.emailOnDeadlineApproaching !== undefined)
-      prefs.emailOnDeadlineApproaching = dto.emailOnDeadlineApproaching;
-    if (dto.emailOnDeadlineOverdue !== undefined)
-      prefs.emailOnDeadlineOverdue = dto.emailOnDeadlineOverdue;
-    if (dto.emailOnWorkflowCompleted !== undefined)
-      prefs.emailOnWorkflowCompleted = dto.emailOnWorkflowCompleted;
-    if (dto.pushNotificationsEnabled !== undefined)
-      prefs.pushNotificationsEnabled = dto.pushNotificationsEnabled;
+    if (dto.emailOnApprovalRequested !== undefined) prefs.emailOnApprovalRequested = dto.emailOnApprovalRequested;
+    if (dto.emailOnDeadlineApproaching !== undefined) prefs.emailOnDeadlineApproaching = dto.emailOnDeadlineApproaching;
+    if (dto.emailOnDeadlineOverdue !== undefined) prefs.emailOnDeadlineOverdue = dto.emailOnDeadlineOverdue;
+    if (dto.emailOnWorkflowCompleted !== undefined) prefs.emailOnWorkflowCompleted = dto.emailOnWorkflowCompleted;
+    if (dto.pushNotificationsEnabled !== undefined) prefs.pushNotificationsEnabled = dto.pushNotificationsEnabled;
     if (dto.digestFrequency !== undefined) prefs.digestFrequency = dto.digestFrequency;
 
     this.preferences.set(userId, prefs);

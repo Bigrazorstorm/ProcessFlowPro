@@ -19,7 +19,7 @@ const makeInstance = (partial: Partial<WorkflowInstance> = {}): WorkflowInstance
     updatedAt: new Date('2026-01-01'),
     steps: [],
     ...partial,
-  } as WorkflowInstance);
+  }) as WorkflowInstance;
 
 const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
   ({
@@ -39,7 +39,7 @@ const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
     instance: makeInstance(),
     comments: [],
     ...partial,
-  } as WorkflowStep);
+  }) as WorkflowStep;
 
 const makeComment = (partial: Partial<StepComment> = {}): StepComment =>
   ({
@@ -49,7 +49,7 @@ const makeComment = (partial: Partial<StepComment> = {}): StepComment =>
     content: 'Test comment',
     createdAt: new Date('2026-01-01'),
     ...partial,
-  } as StepComment);
+  }) as StepComment;
 
 const makeStepsRepo = () => ({
   findOne: jest.fn(),
@@ -127,7 +127,12 @@ describe('WorkflowExecutionService', () => {
         .mockResolvedValueOnce({ ...step, status: WorkflowStepStatus.IN_PROGRESS, comments: [] }); // reload
       stepsRepo.save.mockResolvedValue({ ...step, status: WorkflowStepStatus.IN_PROGRESS });
 
-      const result = await service.updateStepStatus('step-1', 'tenant-1', { status: WorkflowStepStatus.IN_PROGRESS }, 'user-1');
+      const result = await service.updateStepStatus(
+        'step-1',
+        'tenant-1',
+        { status: WorkflowStepStatus.IN_PROGRESS },
+        'user-1',
+      );
       expect(result.status).toBe(WorkflowStepStatus.IN_PROGRESS);
     });
 
@@ -147,7 +152,12 @@ describe('WorkflowExecutionService', () => {
         .mockResolvedValueOnce({ ...step, status: WorkflowStepStatus.DONE, completedAt: new Date(), comments: [] });
       stepsRepo.save.mockResolvedValue({ ...step, status: WorkflowStepStatus.DONE, completedAt: new Date() });
 
-      const result = await service.updateStepStatus('step-1', 'tenant-1', { status: WorkflowStepStatus.DONE }, 'user-1');
+      const result = await service.updateStepStatus(
+        'step-1',
+        'tenant-1',
+        { status: WorkflowStepStatus.DONE },
+        'user-1',
+      );
       expect(result.status).toBe(WorkflowStepStatus.DONE);
     });
 
@@ -160,7 +170,12 @@ describe('WorkflowExecutionService', () => {
       commentsRepo.create.mockReturnValue(makeComment());
       commentsRepo.save.mockResolvedValue(makeComment());
 
-      await service.updateStepStatus('step-1', 'tenant-1', { status: WorkflowStepStatus.IN_PROGRESS, reason: 'Starting now' }, 'user-1');
+      await service.updateStepStatus(
+        'step-1',
+        'tenant-1',
+        { status: WorkflowStepStatus.IN_PROGRESS, reason: 'Starting now' },
+        'user-1',
+      );
       expect(commentsRepo.create).toHaveBeenCalled();
       expect(commentsRepo.save).toHaveBeenCalled();
     });
@@ -220,7 +235,9 @@ describe('WorkflowExecutionService', () => {
       stepsRepo.findOne.mockResolvedValue(step);
       usersRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.assignStep('step-1', 'tenant-1', { userId: 'ghost-user' })).rejects.toThrow(NotFoundException);
+      await expect(service.assignStep('step-1', 'tenant-1', { userId: 'ghost-user' })).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -238,7 +255,9 @@ describe('WorkflowExecutionService', () => {
 
     it('should throw NotFoundException when step not found', async () => {
       stepsRepo.findOne.mockResolvedValue(null);
-      await expect(service.addComment('no-step', 'tenant-1', { content: 'test' }, 'user-1')).rejects.toThrow(NotFoundException);
+      await expect(service.addComment('no-step', 'tenant-1', { content: 'test' }, 'user-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -282,7 +301,9 @@ describe('WorkflowExecutionService', () => {
       const step = makeStep({ status: WorkflowStepStatus.OPEN });
       stepsRepo.findOne.mockResolvedValue(step);
 
-      await expect(service.rejectStep('step-1', 'tenant-1', { reason: 'x' }, 'user-1')).rejects.toThrow(BadRequestException);
+      await expect(service.rejectStep('step-1', 'tenant-1', { reason: 'x' }, 'user-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -290,9 +311,12 @@ describe('WorkflowExecutionService', () => {
     it('should shift step due date and set status to SHIFTED', async () => {
       const newDueDate = '2026-03-15';
       const step = makeStep({ status: WorkflowStepStatus.IN_PROGRESS });
-      stepsRepo.findOne
-        .mockResolvedValueOnce(step)
-        .mockResolvedValueOnce({ ...step, status: WorkflowStepStatus.SHIFTED, dueDate: new Date(newDueDate), comments: [] });
+      stepsRepo.findOne.mockResolvedValueOnce(step).mockResolvedValueOnce({
+        ...step,
+        status: WorkflowStepStatus.SHIFTED,
+        dueDate: new Date(newDueDate),
+        comments: [],
+      });
       stepsRepo.save.mockResolvedValue({ ...step, status: WorkflowStepStatus.SHIFTED });
 
       const result = await service.shiftStepDate('step-1', 'tenant-1', { newDueDate });
@@ -303,14 +327,18 @@ describe('WorkflowExecutionService', () => {
       const step = makeStep({ status: WorkflowStepStatus.DONE });
       stepsRepo.findOne.mockResolvedValue(step);
 
-      await expect(service.shiftStepDate('step-1', 'tenant-1', { newDueDate: '2026-03-15' })).rejects.toThrow(BadRequestException);
+      await expect(service.shiftStepDate('step-1', 'tenant-1', { newDueDate: '2026-03-15' })).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException when step is SKIPPED', async () => {
       const step = makeStep({ status: WorkflowStepStatus.SKIPPED });
       stepsRepo.findOne.mockResolvedValue(step);
 
-      await expect(service.shiftStepDate('step-1', 'tenant-1', { newDueDate: '2026-03-15' })).rejects.toThrow(BadRequestException);
+      await expect(service.shiftStepDate('step-1', 'tenant-1', { newDueDate: '2026-03-15' })).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -374,14 +402,23 @@ describe('WorkflowExecutionService', () => {
   describe('setEstimation', () => {
     it('should set estimation and move step to PENDING_APPROVAL', async () => {
       const step = makeStep({ status: WorkflowStepStatus.IN_PROGRESS, comments: [] });
-      stepsRepo.findOne
-        .mockResolvedValueOnce(step)
-        .mockResolvedValueOnce({ ...step, status: WorkflowStepStatus.PENDING_APPROVAL, isEstimation: true, estimationValue: 5, comments: [] });
+      stepsRepo.findOne.mockResolvedValueOnce(step).mockResolvedValueOnce({
+        ...step,
+        status: WorkflowStepStatus.PENDING_APPROVAL,
+        isEstimation: true,
+        estimationValue: 5,
+        comments: [],
+      });
       stepsRepo.save.mockResolvedValue(step);
       commentsRepo.create.mockReturnValue(makeComment());
       commentsRepo.save.mockResolvedValue(makeComment());
 
-      const result = await service.setEstimation('step-1', 'tenant-1', { estimationValue: 5, reason: 'Complex task' }, 'user-1');
+      const result = await service.setEstimation(
+        'step-1',
+        'tenant-1',
+        { estimationValue: 5, reason: 'Complex task' },
+        'user-1',
+      );
       expect(result.status).toBe(WorkflowStepStatus.PENDING_APPROVAL);
     });
   });

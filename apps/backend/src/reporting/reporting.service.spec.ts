@@ -25,7 +25,7 @@ const makeInstance = (partial: Partial<WorkflowInstance> = {}): WorkflowInstance
     createdAt: new Date('2026-02-15'),
     updatedAt: new Date('2026-02-15'),
     ...partial,
-  } as WorkflowInstance);
+  }) as WorkflowInstance;
 
 const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
   ({
@@ -38,7 +38,7 @@ const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
     createdAt: new Date('2026-02-15'),
     updatedAt: new Date('2026-02-15'),
     ...partial,
-  } as WorkflowStep);
+  }) as WorkflowStep;
 
 const makeUser = (partial: Partial<User> = {}): User =>
   ({
@@ -52,7 +52,7 @@ const makeUser = (partial: Partial<User> = {}): User =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as User);
+  }) as User;
 
 const makeClient = (partial: Partial<Client> = {}): Client =>
   ({
@@ -63,7 +63,7 @@ const makeClient = (partial: Partial<Client> = {}): Client =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as Client);
+  }) as Client;
 
 const makeTemplate = (partial: Partial<WorkflowTemplate> = {}): WorkflowTemplate =>
   ({
@@ -75,7 +75,7 @@ const makeTemplate = (partial: Partial<WorkflowTemplate> = {}): WorkflowTemplate
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as WorkflowTemplate);
+  }) as WorkflowTemplate;
 
 const makeQueryBuilder = (overrides: Record<string, jest.Mock> = {}) => {
   const qb: any = {
@@ -149,9 +149,7 @@ describe('ReportingService', () => {
 
     it('should generate a CLIENT_PERFORMANCE report', async () => {
       clientsRepo.find.mockResolvedValue([makeClient()]);
-      instancesRepo.find.mockResolvedValue([
-        makeInstance({ status: WorkflowInstanceStatus.COMPLETED }),
-      ]);
+      instancesRepo.find.mockResolvedValue([makeInstance({ status: WorkflowInstanceStatus.COMPLETED })]);
 
       const result = await service.generateReport(
         { type: ReportType.CLIENT_PERFORMANCE, dateRange: makeDateRange() },
@@ -165,9 +163,7 @@ describe('ReportingService', () => {
 
     it('should generate a USER_WORKLOAD report', async () => {
       usersRepo.find.mockResolvedValue([makeUser()]);
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
 
       const result = await service.generateReport(
         { type: ReportType.USER_WORKLOAD, dateRange: makeDateRange() },
@@ -193,9 +189,7 @@ describe('ReportingService', () => {
     });
 
     it('should generate a DEADLINE_COMPLIANCE report', async () => {
-      instancesRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      instancesRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
 
       const result = await service.generateReport(
         { type: ReportType.DEADLINE_COMPLIANCE, dateRange: makeDateRange() },
@@ -222,24 +216,17 @@ describe('ReportingService', () => {
     });
 
     it('should throw BadRequestException for unknown report type', async () => {
-      await expect(
-        service.generateReport({ type: 'UNKNOWN_TYPE' as any }, 'tenant-1'),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.generateReport({ type: 'UNKNOWN_TYPE' as any }, 'tenant-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should use default date range when not provided', async () => {
-      instancesRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      instancesRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
       templatesRepo.find.mockResolvedValue([]);
 
-      const result = await service.generateReport(
-        { type: ReportType.WORKFLOW_SUMMARY },
-        'tenant-1',
-      );
+      const result = await service.generateReport({ type: ReportType.WORKFLOW_SUMMARY }, 'tenant-1');
 
       expect(result.periodStart).toBeDefined();
       expect(result.periodEnd).toBeDefined();
@@ -248,12 +235,8 @@ describe('ReportingService', () => {
 
   describe('exportReport', () => {
     it('should export report as JSON', async () => {
-      instancesRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      instancesRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
       templatesRepo.find.mockResolvedValue([]);
 
       const result = await service.exportReport(
@@ -268,9 +251,7 @@ describe('ReportingService', () => {
 
     it('should export report as CSV', async () => {
       usersRepo.find.mockResolvedValue([makeUser()]);
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
 
       const result = await service.exportReport(
         { type: ReportType.USER_WORKLOAD, format: ExportFormat.CSV, dateRange: makeDateRange() },
@@ -296,12 +277,8 @@ describe('ReportingService', () => {
     });
 
     it('should throw BadRequestException for unknown format', async () => {
-      instancesRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      instancesRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
       templatesRepo.find.mockResolvedValue([]);
 
       await expect(
@@ -316,7 +293,12 @@ describe('ReportingService', () => {
   describe('scheduleReport', () => {
     it('should schedule a daily report', async () => {
       const result = await service.scheduleReport(
-        { type: ReportType.WORKFLOW_SUMMARY, format: ExportFormat.JSON, frequency: ReportFrequency.DAILY, recipientEmail: 'admin@example.com' },
+        {
+          type: ReportType.WORKFLOW_SUMMARY,
+          format: ExportFormat.JSON,
+          frequency: ReportFrequency.DAILY,
+          recipientEmail: 'admin@example.com',
+        },
         'tenant-1',
         'user-1',
       );
@@ -330,7 +312,12 @@ describe('ReportingService', () => {
 
     it('should schedule a weekly report', async () => {
       const result = await service.scheduleReport(
-        { type: ReportType.WORKFLOW_SUMMARY, format: ExportFormat.CSV, frequency: ReportFrequency.WEEKLY, recipientEmail: 'admin@example.com' },
+        {
+          type: ReportType.WORKFLOW_SUMMARY,
+          format: ExportFormat.CSV,
+          frequency: ReportFrequency.WEEKLY,
+          recipientEmail: 'admin@example.com',
+        },
         'tenant-1',
         'user-1',
       );
@@ -341,7 +328,12 @@ describe('ReportingService', () => {
 
     it('should schedule a monthly report', async () => {
       const result = await service.scheduleReport(
-        { type: ReportType.WORKFLOW_SUMMARY, format: ExportFormat.JSON, frequency: ReportFrequency.MONTHLY, recipientEmail: 'admin@example.com' },
+        {
+          type: ReportType.WORKFLOW_SUMMARY,
+          format: ExportFormat.JSON,
+          frequency: ReportFrequency.MONTHLY,
+          recipientEmail: 'admin@example.com',
+        },
         'tenant-1',
         'user-1',
       );
@@ -358,12 +350,22 @@ describe('ReportingService', () => {
 
     it('should return only reports for the specified tenant', async () => {
       await service.scheduleReport(
-        { type: ReportType.WORKFLOW_SUMMARY, format: ExportFormat.JSON, frequency: ReportFrequency.DAILY, recipientEmail: 'a@b.com' },
+        {
+          type: ReportType.WORKFLOW_SUMMARY,
+          format: ExportFormat.JSON,
+          frequency: ReportFrequency.DAILY,
+          recipientEmail: 'a@b.com',
+        },
         'tenant-1',
         'user-1',
       );
       await service.scheduleReport(
-        { type: ReportType.WORKFLOW_SUMMARY, format: ExportFormat.JSON, frequency: ReportFrequency.DAILY, recipientEmail: 'x@y.com' },
+        {
+          type: ReportType.WORKFLOW_SUMMARY,
+          format: ExportFormat.JSON,
+          frequency: ReportFrequency.DAILY,
+          recipientEmail: 'x@y.com',
+        },
         'tenant-2',
         'user-2',
       );
@@ -377,7 +379,12 @@ describe('ReportingService', () => {
   describe('deleteScheduledReport', () => {
     it('should delete a scheduled report', async () => {
       const { scheduleId } = await service.scheduleReport(
-        { type: ReportType.WORKFLOW_SUMMARY, format: ExportFormat.JSON, frequency: ReportFrequency.DAILY, recipientEmail: 'a@b.com' },
+        {
+          type: ReportType.WORKFLOW_SUMMARY,
+          format: ExportFormat.JSON,
+          frequency: ReportFrequency.DAILY,
+          recipientEmail: 'a@b.com',
+        },
         'tenant-1',
         'user-1',
       );
@@ -394,7 +401,12 @@ describe('ReportingService', () => {
 
     it('should throw BadRequestException when report belongs to different tenant', async () => {
       const { scheduleId } = await service.scheduleReport(
-        { type: ReportType.WORKFLOW_SUMMARY, format: ExportFormat.JSON, frequency: ReportFrequency.DAILY, recipientEmail: 'a@b.com' },
+        {
+          type: ReportType.WORKFLOW_SUMMARY,
+          format: ExportFormat.JSON,
+          frequency: ReportFrequency.DAILY,
+          recipientEmail: 'a@b.com',
+        },
         'tenant-1',
         'user-1',
       );
@@ -412,9 +424,7 @@ describe('ReportingService', () => {
       instancesRepo.createQueryBuilder.mockReturnValue(
         makeQueryBuilder({ getMany: jest.fn().mockResolvedValue(completedInstances) }),
       );
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
       templatesRepo.find.mockResolvedValue([]);
 
       const result = await service.generateReport(
@@ -430,9 +440,7 @@ describe('ReportingService', () => {
       instancesRepo.createQueryBuilder.mockReturnValue(
         makeQueryBuilder({ getMany: jest.fn().mockResolvedValue(activeInstances) }),
       );
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }),
-      );
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([]) }));
       templatesRepo.find.mockResolvedValue([]);
 
       const result = await service.generateReport(

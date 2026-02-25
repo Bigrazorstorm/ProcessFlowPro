@@ -9,11 +9,7 @@ import { RemindersService } from './reminders.service';
 import { RemindersController } from './reminders.controller';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([WorkflowStep, WorkflowInstance, User]),
-    EmailModule,
-    NotificationsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([WorkflowStep, WorkflowInstance, User]), EmailModule, NotificationsModule],
   controllers: [RemindersController],
   providers: [RemindersService],
   exports: [RemindersService],

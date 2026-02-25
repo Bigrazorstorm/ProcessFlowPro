@@ -1,6 +1,6 @@
 import { TenantContextService } from './tenant-context.service';
 
-const makeRequest = (user?: any) => ({ user } as any);
+const makeRequest = (user?: any) => ({ user }) as any;
 
 describe('TenantContextService', () => {
   it('should be defined', () => {

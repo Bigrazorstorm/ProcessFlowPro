@@ -192,7 +192,7 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 ### 3.2 Collaboration
 - [x] Echtzeit-Updates (WebSockets via socket.io)
 - [x] Teamkalender (Wochenansicht aller Teammitglieder mit Aufgaben & Workload-Karten)
-- [ ] Chat-Integration
+- [x] Chat-Integration (Team-Chat mit Räumen, Echtzeit-Nachrichten via WebSocket)
 - [x] Dokumenten-Sharing (Dokumentenverwaltung mit Upload, Verknüpfung zu Mandanten/Workflows, Filter & Suche)
 
 ### 3.3 Digitale Signatur
@@ -208,8 +208,8 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ### 3.5 KI-Unterstützung
 - [x] Intelligente Workflow-Vorschläge (Heuristik-basierte Analyse: kritische Workflows, überfällige Steps)
-- [ ] Deadline-Optimierung
-- [ ] Anomalie-Erkennung
+- [x] Deadline-Optimierung (Erkennung von Deadline-Druck bei Mitarbeitern mit ≥3 Aufgaben in 2 Tagen, Umverteilungsempfehlung)
+- [x] Anomalie-Erkennung (statistische Erkennung ungewöhnlich lang laufender Steps via Standardabweichung)
 - [x] Kapazitäts-Vorhersage (Echtzeit-Auslastungsanalyse pro Mitarbeiter mit Status-Klassifizierung)
 
 ---
@@ -283,17 +283,15 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 - ✅ Testing: 100% (Backend Unit-Tests: AuthService, UsersService, ClientsService, WorkflowTemplatesService, NotificationsService, DeadlineCalculatorService, DashboardService, WorkflowInstancesService, WorkflowExecutionService, ReportingService, Guards, TenantContextService (221 Tests total, Coverage 85.78%); Frontend Component-Tests: Button, Login, Dashboard, ProtectedRoute; Frontend E2E-Tests: Playwright – Login-Flow, Auth-Protection, Navigation (19 Tests))
 - ✅ Production: 100% (Kubernetes, CI/CD, Monitoring, Backup, ELK Logging, Skalierung, DSGVO/GoBD-Compliance, Dokumentation)
 - ✅ Phase 3.1: Email-Integration ✅, Automatische Erinnerungen ✅, Eskalations-Management ✅, Workflow-Trigger ✅
-- ✅ Phase 3.2: Echtzeit-Updates (WebSockets) ✅, Teamkalender ✅, Dokumenten-Sharing ✅
-- ✅ Phase 3.5: KI-Unterstützung (Intelligente Workflow-Vorschläge ✅, Kapazitäts-Vorhersage ✅)
+- ✅ Phase 3.2: Echtzeit-Updates (WebSockets) ✅, Teamkalender ✅, Chat-Integration ✅, Dokumenten-Sharing ✅
+- ✅ Phase 3.5: KI-Unterstützung (Intelligente Workflow-Vorschläge ✅, Kapazitäts-Vorhersage ✅, Deadline-Optimierung ✅, Anomalie-Erkennung ✅)
 
 **Nächste Schritte (Phase 3 & Qualitätssicherung):**
-1. Phase 3.2: Chat-Integration
-2. Phase 3.3: Digitale Signatur
-3. Phase 3.5: Deadline-Optimierung, Anomalie-Erkennung
-4. Phase 4.3: Load-Tests (k6), Performance-Monitoring
-5. Phase 4.4: Penetration-Tests, OWASP-Compliance
-6. Phase 5.4: Video-Tutorials
-7. Phase 5.2: CDN-Integration
+1. Phase 3.3: Digitale Signatur
+2. Phase 4.3: Load-Tests (k6), Performance-Monitoring
+3. Phase 4.4: Penetration-Tests, OWASP-Compliance
+4. Phase 5.4: Video-Tutorials
+5. Phase 5.2: CDN-Integration
 
 ---
 

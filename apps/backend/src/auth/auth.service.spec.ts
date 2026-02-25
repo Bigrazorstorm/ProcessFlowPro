@@ -34,7 +34,7 @@ const makeUser = (partial: Partial<User> = {}): User =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as User);
+  }) as User;
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -96,7 +96,12 @@ describe('AuthService', () => {
   describe('refresh', () => {
     it('should return new tokens when refresh token is valid', async () => {
       const user = makeUser();
-      jwtService.verify.mockReturnValue({ userId: 'user-1', tenantId: 'tenant-1', email: 'user@example.com', roles: [UserRole.ACCOUNTANT] });
+      jwtService.verify.mockReturnValue({
+        userId: 'user-1',
+        tenantId: 'tenant-1',
+        email: 'user@example.com',
+        roles: [UserRole.ACCOUNTANT],
+      });
       userRepo.findOne.mockResolvedValue(user);
 
       const result = await service.refresh('valid-refresh-token');
@@ -114,14 +119,24 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException when user is inactive', async () => {
-      jwtService.verify.mockReturnValue({ userId: 'user-1', tenantId: 'tenant-1', email: 'user@example.com', roles: [] });
+      jwtService.verify.mockReturnValue({
+        userId: 'user-1',
+        tenantId: 'tenant-1',
+        email: 'user@example.com',
+        roles: [],
+      });
       userRepo.findOne.mockResolvedValue(makeUser({ isActive: false }));
 
       await expect(service.refresh('token')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw UnauthorizedException when user no longer exists', async () => {
-      jwtService.verify.mockReturnValue({ userId: 'ghost', tenantId: 'tenant-1', email: 'ghost@example.com', roles: [] });
+      jwtService.verify.mockReturnValue({
+        userId: 'ghost',
+        tenantId: 'tenant-1',
+        email: 'ghost@example.com',
+        roles: [],
+      });
       userRepo.findOne.mockResolvedValue(null);
 
       await expect(service.refresh('token')).rejects.toThrow(UnauthorizedException);

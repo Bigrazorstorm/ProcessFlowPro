@@ -10,16 +10,7 @@ import { DashboardController } from './dashboard.controller';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      WorkflowInstance,
-      WorkflowStep,
-      WorkflowTemplate,
-      User,
-      Client,
-    ]),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([WorkflowInstance, WorkflowStep, WorkflowTemplate, User, Client]), AuthModule],
   controllers: [DashboardController],
   providers: [DashboardService],
   exports: [DashboardService],

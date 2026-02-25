@@ -6,12 +6,12 @@ import { WorkflowStep, WorkflowStepStatus } from '../database/entities/workflow-
 import { User } from '../database/entities/user.entity';
 import { Client } from '../database/entities/client.entity';
 import { WorkflowTemplate } from '../database/entities/workflow-template.entity';
-import { 
-  ReportType, 
-  ExportFormat, 
+import {
+  ReportType,
+  ExportFormat,
   ReportFrequency,
-  GenerateReportDto, 
-  ExportReportDto, 
+  GenerateReportDto,
+  ExportReportDto,
   ScheduleReportDto,
   WorkflowSummaryReportDto,
   ClientPerformanceReportDto,
@@ -38,10 +38,7 @@ export class ReportingService {
     private templatesRepository: Repository<WorkflowTemplate>,
   ) {}
 
-  async generateReport(
-    dto: GenerateReportDto,
-    tenantId: string,
-  ): Promise<any> {
+  async generateReport(dto: GenerateReportDto, tenantId: string): Promise<any> {
     const dateRange = this.getDateRange(dto.dateRange);
 
     switch (dto.type) {
@@ -143,8 +140,10 @@ export class ReportingService {
 
     const instances = await query.getMany();
     const totalInstances = instances.length;
-    const activies = instances.filter(i => i.status !== WorkflowInstanceStatus.COMPLETED && i.status !== WorkflowInstanceStatus.ARCHIVED).length;
-    const completedInstances = instances.filter(i => i.status === WorkflowInstanceStatus.COMPLETED).length;
+    const activies = instances.filter(
+      (i) => i.status !== WorkflowInstanceStatus.COMPLETED && i.status !== WorkflowInstanceStatus.ARCHIVED,
+    ).length;
+    const completedInstances = instances.filter((i) => i.status === WorkflowInstanceStatus.COMPLETED).length;
     const overdueInstances = 0; // Can be calculated from steps overdue
 
     const steps = await this.stepsRepository
@@ -155,16 +154,19 @@ export class ReportingService {
       .andWhere('instance.createdAt <= :endDate', { endDate: dateRange.endDate })
       .getMany();
 
-    const completedSteps = steps.filter(s => s.status === WorkflowStepStatus.DONE).length;
-    const pendingSteps = steps.filter(s => s.status !== WorkflowStepStatus.DONE).length;
+    const completedSteps = steps.filter((s) => s.status === WorkflowStepStatus.DONE).length;
+    const pendingSteps = steps.filter((s) => s.status !== WorkflowStepStatus.DONE).length;
 
     const templates = await this.templatesRepository.find({ where: { tenantId } });
-    const topTemplates = templates.map(t => ({
-      templateId: t.id,
-      templateName: t.name,
-      instanceCount: instances.filter(i => i.templateId === t.id).length,
-      averageCompletionTime: 0,
-    })).sort((a, b) => b.instanceCount - a.instanceCount).slice(0, 5);
+    const topTemplates = templates
+      .map((t) => ({
+        templateId: t.id,
+        templateName: t.name,
+        instanceCount: instances.filter((i) => i.templateId === t.id).length,
+        averageCompletionTime: 0,
+      }))
+      .sort((a, b) => b.instanceCount - a.instanceCount)
+      .slice(0, 5);
 
     return {
       generatedAt: new Date(),
@@ -203,18 +205,18 @@ export class ReportingService {
         });
 
         const filteredInstances = instances.filter(
-          i => i.createdAt >= dateRange.startDate && i.createdAt <= dateRange.endDate,
+          (i) => i.createdAt >= dateRange.startDate && i.createdAt <= dateRange.endDate,
         );
 
-        const completedCount = filteredInstances.filter(i => i.status === WorkflowInstanceStatus.COMPLETED).length;
-        const completionRate = filteredInstances.length > 0 
-          ? (completedCount / filteredInstances.length) * 100 
-          : 0;
+        const completedCount = filteredInstances.filter((i) => i.status === WorkflowInstanceStatus.COMPLETED).length;
+        const completionRate = filteredInstances.length > 0 ? (completedCount / filteredInstances.length) * 100 : 0;
 
         return {
           clientId: client.id,
           clientName: client.name,
-          activeWorkflows: filteredInstances.filter(i => i.status !== WorkflowInstanceStatus.COMPLETED && i.status !== WorkflowInstanceStatus.ARCHIVED).length,
+          activeWorkflows: filteredInstances.filter(
+            (i) => i.status !== WorkflowInstanceStatus.COMPLETED && i.status !== WorkflowInstanceStatus.ARCHIVED,
+          ).length,
           completedWorkflows: completedCount,
           completionRate,
           averageCompletionTime: 0,
@@ -226,17 +228,17 @@ export class ReportingService {
     const topPerformers = clientMetrics
       .sort((a, b) => b.completionRate - a.completionRate)
       .slice(0, 5)
-      .map(m => ({
+      .map((m) => ({
         clientId: m.clientId,
         clientName: m.clientName,
         completionRate: m.completionRate,
       }));
 
     const needsAttention = clientMetrics
-      .filter(m => m.overdueWorkflows > 0)
+      .filter((m) => m.overdueWorkflows > 0)
       .sort((a, b) => b.overdueWorkflows - a.overdueWorkflows)
       .slice(0, 5)
-      .map(m => ({
+      .map((m) => ({
         clientId: m.clientId,
         clientName: m.clientName,
         overdueCount: m.overdueWorkflows,
@@ -269,10 +271,10 @@ export class ReportingService {
           .getMany();
 
         const filteredSteps = steps.filter(
-          s => s.createdAt >= dateRange.startDate && s.createdAt <= dateRange.endDate,
+          (s) => s.createdAt >= dateRange.startDate && s.createdAt <= dateRange.endDate,
         );
 
-        const completedSteps = filteredSteps.filter(s => s.status === WorkflowStepStatus.DONE).length;
+        const completedSteps = filteredSteps.filter((s) => s.status === WorkflowStepStatus.DONE).length;
         const totalAssigned = filteredSteps.length;
         const utilizationPercent = totalAssigned > 0 ? (completedSteps / totalAssigned) * 100 : 0;
 
@@ -282,17 +284,18 @@ export class ReportingService {
           role: user.role,
           assignedSteps: totalAssigned,
           completedSteps,
-          inProgressSteps: filteredSteps.filter(s => s.status === WorkflowStepStatus.IN_PROGRESS).length,
-          overdueSteps: filteredSteps.filter(s => s.dueDate && s.dueDate < new Date() && s.status !== WorkflowStepStatus.DONE).length,
+          inProgressSteps: filteredSteps.filter((s) => s.status === WorkflowStepStatus.IN_PROGRESS).length,
+          overdueSteps: filteredSteps.filter(
+            (s) => s.dueDate && s.dueDate < new Date() && s.status !== WorkflowStepStatus.DONE,
+          ).length,
           utilizationPercent,
           averageCompletionTime: 0,
         };
       }),
     );
 
-    const avgUtilization = userMetrics.length > 0
-      ? userMetrics.reduce((sum, m) => sum + m.utilizationPercent, 0) / userMetrics.length
-      : 0;
+    const avgUtilization =
+      userMetrics.length > 0 ? userMetrics.reduce((sum, m) => sum + m.utilizationPercent, 0) / userMetrics.length : 0;
 
     return {
       generatedAt: new Date(),
@@ -302,8 +305,14 @@ export class ReportingService {
       teamMetrics: {
         totalUsers: users.length,
         averageUtilization: avgUtilization,
-        highestUtilization: userMetrics.length > 0 ? userMetrics.sort((a, b) => b.utilizationPercent - a.utilizationPercent)[0].userName : 'N/A',
-        lowestUtilization: userMetrics.length > 0 ? userMetrics.sort((a, b) => a.utilizationPercent - b.utilizationPercent)[0].userName : 'N/A',
+        highestUtilization:
+          userMetrics.length > 0
+            ? userMetrics.sort((a, b) => b.utilizationPercent - a.utilizationPercent)[0].userName
+            : 'N/A',
+        lowestUtilization:
+          userMetrics.length > 0
+            ? userMetrics.sort((a, b) => a.utilizationPercent - b.utilizationPercent)[0].userName
+            : 'N/A',
       },
     };
   }
@@ -322,13 +331,13 @@ export class ReportingService {
         });
 
         const filteredInstances = instances.filter(
-          i => i.createdAt >= dateRange.startDate && i.createdAt <= dateRange.endDate,
+          (i) => i.createdAt >= dateRange.startDate && i.createdAt <= dateRange.endDate,
         );
 
-        const successfulInstances = filteredInstances.filter(i => i.status === WorkflowInstanceStatus.COMPLETED).length;
-        const successRate = filteredInstances.length > 0 
-          ? (successfulInstances / filteredInstances.length) * 100 
-          : 0;
+        const successfulInstances = filteredInstances.filter(
+          (i) => i.status === WorkflowInstanceStatus.COMPLETED,
+        ).length;
+        const successRate = filteredInstances.length > 0 ? (successfulInstances / filteredInstances.length) * 100 : 0;
 
         return {
           templateId: template.id,
@@ -337,24 +346,27 @@ export class ReportingService {
           successRate,
           averageCompletionTime: 0,
           successfulInstances,
-          failedInstances: filteredInstances.filter(i => i.status === WorkflowInstanceStatus.ARCHIVED).length,
+          failedInstances: filteredInstances.filter((i) => i.status === WorkflowInstanceStatus.ARCHIVED).length,
           totalSteps: template.steps?.length || 0,
           averageStepComplexity: 0,
         };
       }),
     );
 
-    const mostUsedTemplate = templates_data.length > 0
-      ? templates_data.sort((a, b) => b.totalInstances - a.totalInstances)[0].templateName
-      : 'N/A';
+    const mostUsedTemplate =
+      templates_data.length > 0
+        ? templates_data.sort((a, b) => b.totalInstances - a.totalInstances)[0].templateName
+        : 'N/A';
 
-    const fastestTemplate = templates_data.length > 0
-      ? templates_data.sort((a, b) => a.averageCompletionTime - b.averageCompletionTime)[0].templateName
-      : 'N/A';
+    const fastestTemplate =
+      templates_data.length > 0
+        ? templates_data.sort((a, b) => a.averageCompletionTime - b.averageCompletionTime)[0].templateName
+        : 'N/A';
 
-    const slowestTemplate = templates_data.length > 0
-      ? templates_data.sort((a, b) => b.averageCompletionTime - a.averageCompletionTime)[0].templateName
-      : 'N/A';
+    const slowestTemplate =
+      templates_data.length > 0
+        ? templates_data.sort((a, b) => b.averageCompletionTime - a.averageCompletionTime)[0].templateName
+        : 'N/A';
 
     return {
       generatedAt: new Date(),
@@ -381,14 +393,14 @@ export class ReportingService {
       .getMany();
 
     const filteredInstances = instances.filter(
-      i => i.createdAt >= dateRange.startDate && i.createdAt <= dateRange.endDate,
+      (i) => i.createdAt >= dateRange.startDate && i.createdAt <= dateRange.endDate,
     );
 
-    const metDeadlines = filteredInstances.filter(i => !i.status || i.status === WorkflowInstanceStatus.COMPLETED).length;
+    const metDeadlines = filteredInstances.filter(
+      (i) => !i.status || i.status === WorkflowInstanceStatus.COMPLETED,
+    ).length;
     const missedDeadlines = filteredInstances.length - metDeadlines;
-    const complianceRate = filteredInstances.length > 0
-      ? (metDeadlines / filteredInstances.length) * 100
-      : 0;
+    const complianceRate = filteredInstances.length > 0 ? (metDeadlines / filteredInstances.length) * 100 : 0;
 
     return {
       generatedAt: new Date(),
@@ -418,20 +430,20 @@ export class ReportingService {
       .andWhere('instance.createdAt <= :endDate', { endDate: dateRange.endDate })
       .getMany();
 
-    const completedTransactions = instances.filter(i => i.status === WorkflowInstanceStatus.COMPLETED).length;
-    const failedTransactions = instances.filter(i => i.status === WorkflowInstanceStatus.ARCHIVED).length;
+    const completedTransactions = instances.filter((i) => i.status === WorkflowInstanceStatus.COMPLETED).length;
+    const failedTransactions = instances.filter((i) => i.status === WorkflowInstanceStatus.ARCHIVED).length;
     const totalTransactions = instances.length;
     const successRate = totalTransactions > 0 ? (completedTransactions / totalTransactions) * 100 : 0;
 
     const clients = await this.clientsRepository.find({ where: { tenantId } });
-    const byClient = clients.map(client => {
-      const clientInstances = instances.filter(i => i.clientId === client.id);
+    const byClient = clients.map((client) => {
+      const clientInstances = instances.filter((i) => i.clientId === client.id);
       return {
         clientId: client.id,
         clientName: client.name,
         transactionCount: clientInstances.length,
-        successfulTransactions: clientInstances.filter(i => i.status === WorkflowInstanceStatus.COMPLETED).length,
-        failedTransactions: clientInstances.filter(i => i.status === WorkflowInstanceStatus.ARCHIVED).length,
+        successfulTransactions: clientInstances.filter((i) => i.status === WorkflowInstanceStatus.COMPLETED).length,
+        failedTransactions: clientInstances.filter((i) => i.status === WorkflowInstanceStatus.ARCHIVED).length,
       };
     });
 
@@ -463,7 +475,7 @@ export class ReportingService {
 
   private exportAsCsv(report: any, reportType: ReportType): { data: string; filename: string; mimeType: string } {
     let csv = '';
-    
+
     if (report.userMetrics) {
       csv = 'User Name,Role,Assigned,Completed,In Progress,Overdue,Utilization %\n';
       report.userMetrics.forEach((m: any) => {

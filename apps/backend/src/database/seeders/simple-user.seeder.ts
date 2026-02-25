@@ -40,7 +40,7 @@ async function createUser() {
     // Create admin user with plaintext password (will be hashed by entity)
     // Note: This uses a pre-generated bcrypt hash for "password123"
     const passwordHash = '$2b$10$e0MYzXyjpJS7Pd0RVvHwHe5Cw7dLhKX.5K9KvPG8wEZ9rHzPVm9Vy';
-    
+
     const adminUser = AppDataSource.getRepository(User).create({
       tenantId: tenant.id,
       name: 'Admin User',

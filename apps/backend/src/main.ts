@@ -30,7 +30,9 @@ async function bootstrap() {
   // Setup Swagger
   const config = new DocumentBuilder()
     .setTitle('ProcessFlow Pro API')
-    .setDescription('The ProcessFlow Pro workflow management system API for automating payroll and statutory deadline workflows')
+    .setDescription(
+      'The ProcessFlow Pro workflow management system API for automating payroll and statutory deadline workflows',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {

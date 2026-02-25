@@ -1,10 +1,6 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  CreateDocumentDto,
-  UpdateDocumentDto,
-  DocumentRecord,
-} from './dto/document.dto';
+import { CreateDocumentDto, UpdateDocumentDto, DocumentRecord } from './dto/document.dto';
 
 @Injectable()
 export class DocumentsService {

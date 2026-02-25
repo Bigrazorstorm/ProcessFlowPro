@@ -12,26 +12,27 @@ const makeRepository = (overrides: Partial<Record<string, jest.Mock>> = {}) => (
   ...overrides,
 });
 
-const makeClient = (partial: Partial<Client> = {}): Client => ({
-  id: 'client-1',
-  tenantId: 'tenant-1',
-  name: 'Mustermann GmbH',
-  address: 'Musterstraße 1, 12345 Berlin',
-  taxNumber: '123/456/78901',
-  companyNumber: 'HRB 12345',
-  industry: 'Steuerberatung',
-  employeeCount: 10,
-  reliabilityFactor: 1.0,
-  primaryUserId: undefined,
-  secondaryUserId: undefined,
-  specialties: [],
-  contacts: [],
-  taxAdvisorContact: undefined,
-  isActive: true,
-  createdAt: new Date('2026-01-01'),
-  updatedAt: new Date('2026-01-01'),
-  ...partial,
-} as Client);
+const makeClient = (partial: Partial<Client> = {}): Client =>
+  ({
+    id: 'client-1',
+    tenantId: 'tenant-1',
+    name: 'Mustermann GmbH',
+    address: 'Musterstraße 1, 12345 Berlin',
+    taxNumber: '123/456/78901',
+    companyNumber: 'HRB 12345',
+    industry: 'Steuerberatung',
+    employeeCount: 10,
+    reliabilityFactor: 1.0,
+    primaryUserId: undefined,
+    secondaryUserId: undefined,
+    specialties: [],
+    contacts: [],
+    taxAdvisorContact: undefined,
+    isActive: true,
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+    ...partial,
+  }) as Client;
 
 describe('ClientsService', () => {
   let service: ClientsService;

@@ -43,12 +43,10 @@ describe('Workflow Templates E2E', () => {
     await userRepo.save(ownerUser);
 
     // Login to get token
-    const loginRes = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'owner@test.com',
-        password: 'TestPassword123',
-      });
+    const loginRes = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'owner@test.com',
+      password: 'TestPassword123',
+    });
 
     ownerToken = loginRes.body.accessToken;
   });

@@ -65,18 +65,17 @@ export class AiSuggestionsService {
 
       // Fetch steps via instances (steps don't have tenantId column directly)
       const instanceIds = instances.map((i) => i.id);
-      const steps = instanceIds.length > 0
-        ? await this.stepsRepo
-            .createQueryBuilder('step')
-            .where('step.instanceId IN (:...ids)', { ids: instanceIds })
-            .getMany()
-        : [];
+      const steps =
+        instanceIds.length > 0
+          ? await this.stepsRepo
+              .createQueryBuilder('step')
+              .where('step.instanceId IN (:...ids)', { ids: instanceIds })
+              .getMany()
+          : [];
 
       // ─── Deadline risk: critical/delayed workflows ────────────────────────
       const overdueInstances = instances.filter(
-        (i) =>
-          i.status === WorkflowInstanceStatus.CRITICAL ||
-          i.status === WorkflowInstanceStatus.DELAYED,
+        (i) => i.status === WorkflowInstanceStatus.CRITICAL || i.status === WorkflowInstanceStatus.DELAYED,
       );
 
       if (overdueInstances.length > 0) {
@@ -154,9 +153,7 @@ export class AiSuggestionsService {
       }
 
       const openSteps = steps.filter(
-        (s) =>
-          s.status !== WorkflowStepStatus.DONE &&
-          s.status !== WorkflowStepStatus.SKIPPED,
+        (s) => s.status !== WorkflowStepStatus.DONE && s.status !== WorkflowStepStatus.SKIPPED,
       );
 
       for (const step of openSteps) {
@@ -249,6 +246,65 @@ export class AiSuggestionsService {
         });
       }
 
+      // ─── Anomaly detection: steps with unusually long duration ──────────
+      const completedSteps = steps.filter((s) => s.status === WorkflowStepStatus.DONE && s.completedAt && s.createdAt);
+      if (completedSteps.length >= 5) {
+        const durations = completedSteps.map(
+          (s) => (new Date(s.completedAt!).getTime() - new Date(s.createdAt).getTime()) / (1000 * 60 * 60 * 24),
+        );
+        const avgDuration = durations.reduce((a, b) => a + b, 0) / durations.length;
+        const stdDev = Math.sqrt(
+          durations.reduce((sum, d) => sum + Math.pow(d - avgDuration, 2), 0) / durations.length,
+        );
+        const threshold = avgDuration + 2 * stdDev;
+        const anomalousCount = durations.filter((d) => d > threshold).length;
+        if (anomalousCount > 0) {
+          suggestions.push({
+            id: 'anomaly-long-steps',
+            type: 'recommendation',
+            category: 'anomaly',
+            title: `${anomalousCount} ungewöhnlich lang laufende Aufgabe${anomalousCount !== 1 ? 'n' : ''} erkannt`,
+            description: `${anomalousCount} abgeschlossene Aufgaben benötigten deutlich länger als der Durchschnitt (Ø ${avgDuration.toFixed(1)} Tage). Mögliche Engpässe oder Prozessprobleme prüfen.`,
+            priority: 'medium',
+            actionLabel: 'Berichte anzeigen',
+            actionPath: '/reports',
+            createdAt: now,
+          });
+        }
+      }
+
+      // ─── Deadline Optimization: suggest redistribution if imbalance ──────
+      const activeStepsWithDue = openSteps.filter((s) => s.dueDate && s.assignedUserId);
+      if (activeStepsWithDue.length > 0) {
+        const userDueSoonMap = new Map<string, number>();
+        const twoDays = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+        for (const step of activeStepsWithDue) {
+          if (step.assignedUserId && new Date(step.dueDate!) <= twoDays) {
+            userDueSoonMap.set(step.assignedUserId, (userDueSoonMap.get(step.assignedUserId) ?? 0) + 1);
+          }
+        }
+        const pressuredUsers = [...userDueSoonMap.entries()].filter(([, count]) => count >= 3);
+        if (pressuredUsers.length > 0) {
+          const names = pressuredUsers
+            .map(([uid, count]) => {
+              const u = users.find((x) => x.id === uid);
+              return u ? `${u.name} (${count} Aufg.)` : `${count} Aufg.`;
+            })
+            .join(', ');
+          suggestions.push({
+            id: 'deadline-pressure',
+            type: 'recommendation',
+            category: 'deadline',
+            title: 'Deadline-Optimierung empfohlen',
+            description: `Folgende Mitarbeiter haben ≥3 Aufgaben in den nächsten 2 Tagen: ${names}. Aufgaben frühzeitig umverteilen oder Fristen anpassen.`,
+            priority: 'medium',
+            actionLabel: 'Teamkalender anzeigen',
+            actionPath: '/team-calendar',
+            createdAt: now,
+          });
+        }
+      }
+
       // ─── Client anomaly: low reliability ─────────────────────────────────
       const lowReliabilityClients = clients.filter(
         (c) => typeof c.reliabilityFactor === 'number' && c.reliabilityFactor < 0.5,
@@ -277,9 +333,7 @@ export class AiSuggestionsService {
         ),
       );
 
-      this.logger.log(
-        `Generated ${suggestions.length} AI suggestions for tenant ${tenantId} (risk: ${riskScore})`,
-      );
+      this.logger.log(`Generated ${suggestions.length} AI suggestions for tenant ${tenantId} (risk: ${riskScore})`);
 
       return {
         suggestions: suggestions.sort((a, b) => {

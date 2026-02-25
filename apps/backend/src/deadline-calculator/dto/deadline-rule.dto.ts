@@ -49,11 +49,11 @@ export class LegalRule {
   deadline!: GermanLegalDeadline;
 }
 
-export type DeadlineRule = 
-  | RelativeWorkdaysRule 
-  | RelativeCalendarEndRule 
-  | FixedDayOfMonthRule 
-  | DependentRule 
+export type DeadlineRule =
+  | RelativeWorkdaysRule
+  | RelativeCalendarEndRule
+  | FixedDayOfMonthRule
+  | DependentRule
   | LegalRule;
 
 export interface DeadlineContext {

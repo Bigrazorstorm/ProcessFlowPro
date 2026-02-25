@@ -11,12 +11,7 @@ import {
   HttpStatus,
   Request,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../auth/guards/tenant.guard';
 import { WorkflowTriggersService } from './workflow-triggers.service';
@@ -50,11 +45,7 @@ export class WorkflowTriggersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a workflow trigger rule' })
-  update(
-    @Request() req: any,
-    @Param('id') id: string,
-    @Body() dto: UpdateWorkflowTriggerDto,
-  ) {
+  update(@Request() req: any, @Param('id') id: string, @Body() dto: UpdateWorkflowTriggerDto) {
     return this.triggersService.update(req.user.tenantId!, id, dto);
   }
 

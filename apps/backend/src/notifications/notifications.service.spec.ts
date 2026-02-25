@@ -65,7 +65,12 @@ describe('NotificationsService', () => {
 
     it('should respect the limit parameter', async () => {
       for (let i = 0; i < 5; i++) {
-        await service.createNotification({ userId, type: NotificationType.COMMENT_MENTIONED, title: `N${i}`, message: 'm' });
+        await service.createNotification({
+          userId,
+          type: NotificationType.COMMENT_MENTIONED,
+          title: `N${i}`,
+          message: 'm',
+        });
       }
       const result = await service.getUserNotifications(userId, 3);
       expect(result.length).toBe(3);
@@ -92,7 +97,12 @@ describe('NotificationsService', () => {
 
   describe('markAsRead', () => {
     it('should mark a notification as read', async () => {
-      const n = await service.createNotification({ userId, type: NotificationType.STEP_ASSIGNED, title: 'T', message: 'm' });
+      const n = await service.createNotification({
+        userId,
+        type: NotificationType.STEP_ASSIGNED,
+        title: 'T',
+        message: 'm',
+      });
       const updated = await service.markAsRead(n.id, userId);
 
       expect(updated).not.toBeNull();
@@ -123,7 +133,12 @@ describe('NotificationsService', () => {
 
   describe('deleteNotification', () => {
     it('should delete an existing notification', async () => {
-      const n = await service.createNotification({ userId, type: NotificationType.STEP_ASSIGNED, title: 'T', message: 'm' });
+      const n = await service.createNotification({
+        userId,
+        type: NotificationType.STEP_ASSIGNED,
+        title: 'T',
+        message: 'm',
+      });
       const deleted = await service.deleteNotification(n.id, userId);
       expect(deleted).toBe(true);
 

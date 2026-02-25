@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../auth/guards/tenant.guard';
@@ -29,10 +19,7 @@ export class UsersController {
 
   @Post()
   @Roles(UserRole.OWNER, UserRole.SENIOR)
-  async create(
-    @Body() createUserDto: CreateUserDto,
-    @Request() req: { user: JwtPayload },
-  ): Promise<UserResponseDto> {
+  async create(@Body() createUserDto: CreateUserDto, @Request() req: { user: JwtPayload }): Promise<UserResponseDto> {
     return this.usersService.create(createUserDto, req.user.tenantId!);
   }
 

@@ -16,7 +16,7 @@ const makeTemplate = (partial: Partial<WorkflowTemplate> = {}): WorkflowTemplate
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as WorkflowTemplate);
+  }) as WorkflowTemplate;
 
 const makeClient = (partial: Partial<Client> = {}): Client =>
   ({
@@ -27,7 +27,7 @@ const makeClient = (partial: Partial<Client> = {}): Client =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as Client);
+  }) as Client;
 
 const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
   ({
@@ -40,7 +40,7 @@ const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as WorkflowStep);
+  }) as WorkflowStep;
 
 const makeInstance = (partial: Partial<WorkflowInstance> = {}): WorkflowInstance =>
   ({
@@ -55,7 +55,7 @@ const makeInstance = (partial: Partial<WorkflowInstance> = {}): WorkflowInstance
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as WorkflowInstance);
+  }) as WorkflowInstance;
 
 const makeInstancesRepo = () => ({
   findOne: jest.fn(),
@@ -124,10 +124,7 @@ describe('WorkflowInstancesService', () => {
   describe('createInstanceFromTemplate', () => {
     it('should create a workflow instance with steps from template', async () => {
       const template = makeTemplate({
-        steps: [
-          { id: 'ts-1', order: 1 } as any,
-          { id: 'ts-2', order: 2 } as any,
-        ],
+        steps: [{ id: 'ts-1', order: 1 } as any, { id: 'ts-2', order: 2 } as any],
       });
       const client = makeClient();
       const savedInstance = makeInstance();
@@ -200,9 +197,7 @@ describe('WorkflowInstancesService', () => {
       instancesRepo.find.mockResolvedValue([]);
       await service.findAllByClient('client-1', 'tenant-1', 3, 10);
 
-      expect(instancesRepo.find).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 20, take: 10 }),
-      );
+      expect(instancesRepo.find).toHaveBeenCalledWith(expect.objectContaining({ skip: 20, take: 10 }));
     });
   });
 
@@ -219,9 +214,7 @@ describe('WorkflowInstancesService', () => {
       instancesRepo.find.mockResolvedValue([]);
       await service.findAllByTenant('tenant-1');
 
-      expect(instancesRepo.find).toHaveBeenCalledWith(
-        expect.objectContaining({ skip: 0, take: 20 }),
-      );
+      expect(instancesRepo.find).toHaveBeenCalledWith(expect.objectContaining({ skip: 0, take: 20 }));
     });
   });
 
@@ -256,9 +249,9 @@ describe('WorkflowInstancesService', () => {
 
     it('should throw NotFoundException when step does not exist', async () => {
       stepsRepo.findOne.mockResolvedValue(null);
-      await expect(
-        service.updateStepStatus('no-step', WorkflowStepStatus.DONE, 'tenant-1'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.updateStepStatus('no-step', WorkflowStepStatus.DONE, 'tenant-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should update assignedUserId when provided', async () => {

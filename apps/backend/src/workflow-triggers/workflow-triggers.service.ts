@@ -99,9 +99,7 @@ export class WorkflowTriggersService {
    * Called by WorkflowExecutionService whenever a step/workflow status changes.
    */
   async fire(event: TriggerEvent, ctx: TriggerFireContext): Promise<void> {
-    const rules = (this.triggers.get(ctx.tenantId) || []).filter(
-      (r) => r.isActive && r.event === event,
-    );
+    const rules = (this.triggers.get(ctx.tenantId) || []).filter((r) => r.isActive && r.event === event);
 
     if (rules.length === 0) return;
 
@@ -122,10 +120,7 @@ export class WorkflowTriggersService {
   private async executeAction(rule: WorkflowTriggerRule, ctx: TriggerFireContext): Promise<void> {
     if (rule.action === TriggerAction.SEND_NOTIFICATION && ctx.userId) {
       const title = this.interpolate(rule.notificationTitle || rule.name, ctx);
-      const message = this.interpolate(
-        rule.notificationMessage || `Trigger "${rule.name}" was fired.`,
-        ctx,
-      );
+      const message = this.interpolate(rule.notificationMessage || `Trigger "${rule.name}" was fired.`, ctx);
 
       await this.notificationsService.createNotification({
         userId: ctx.userId,

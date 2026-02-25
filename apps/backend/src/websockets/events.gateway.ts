@@ -50,14 +50,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * Client sends 'join' with its userId to register for personal events.
+   * Client sends 'join' with its userId and tenantId to register for personal and tenant events.
    */
   @SubscribeMessage('join')
-  handleJoin(
-    @MessageBody() data: { userId: string },
-    @ConnectedSocket() client: Socket,
-  ): void {
-    const { userId } = data;
+  handleJoin(@MessageBody() data: { userId: string; tenantId?: string }, @ConnectedSocket() client: Socket): void {
+    const { userId, tenantId } = data;
     if (!userId) return;
 
     if (!this.userSockets.has(userId)) {
@@ -67,6 +64,12 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     client.join(`user:${userId}`);
     this.logger.debug(`User ${userId} joined room user:${userId} (socket: ${client.id})`);
+
+    if (tenantId) {
+      client.join(`tenant:${tenantId}`);
+      this.logger.debug(`User ${userId} joined tenant room tenant:${tenantId}`);
+    }
+
     client.emit('joined', { userId, socketId: client.id });
   }
 
@@ -76,6 +79,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   emitNotification(userId: string, event: NotificationEvent): void {
     this.server.to(`user:${userId}`).emit('notification', event);
     this.logger.debug(`Emitted notification to user ${userId}: ${event.title}`);
+  }
+
+  /**
+   * Broadcast an event to all members of a tenant.
+   */
+  broadcastToTenant(tenantId: string, eventName: string, data: unknown): void {
+    this.server.to(`tenant:${tenantId}`).emit(eventName, data);
+    this.logger.debug(`Broadcast ${eventName} to tenant ${tenantId}`);
   }
 
   /**

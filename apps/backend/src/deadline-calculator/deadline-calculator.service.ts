@@ -37,29 +37,16 @@ export class DeadlineCalculatorService {
 
     switch (rule.type) {
       case DeadlineRuleType.RELATIVE_WORKDAYS:
-        return this.calculateRelativeWorkdays(
-          rule as RelativeWorkdaysRule,
-          referenceDate,
-        );
+        return this.calculateRelativeWorkdays(rule as RelativeWorkdaysRule, referenceDate);
 
       case DeadlineRuleType.RELATIVE_CALENDAR_END:
-        return this.calculateRelativeCalendarEnd(
-          rule as RelativeCalendarEndRule,
-          referenceDate,
-        );
+        return this.calculateRelativeCalendarEnd(rule as RelativeCalendarEndRule, referenceDate);
 
       case DeadlineRuleType.FIXED_DAY_OF_MONTH:
-        return this.calculateFixedDayOfMonth(
-          rule as FixedDayOfMonthRule,
-          referenceDate,
-        );
+        return this.calculateFixedDayOfMonth(rule as FixedDayOfMonthRule, referenceDate);
 
       case DeadlineRuleType.DEPENDENT:
-        return this.calculateDependent(
-          rule as DependentRule,
-          referenceDate,
-          context.previousStepCompletionDate,
-        );
+        return this.calculateDependent(rule as DependentRule, referenceDate, context.previousStepCompletionDate);
 
       case DeadlineRuleType.LEGAL:
         return this.calculateLegal(rule as LegalRule, referenceDate);
@@ -72,10 +59,7 @@ export class DeadlineCalculatorService {
   /**
    * Calculate relative workdays: add X workdays to reference date
    */
-  private calculateRelativeWorkdays(
-    rule: RelativeWorkdaysRule,
-    referenceDate: Date,
-  ): DeadlineResult {
+  private calculateRelativeWorkdays(rule: RelativeWorkdaysRule, referenceDate: Date): DeadlineResult {
     let deadline = new Date(referenceDate);
     let workdaysAdded = 0;
 
@@ -97,10 +81,7 @@ export class DeadlineCalculatorService {
   /**
    * Calculate relative calendar end: end of month/quarter/year + optional offset
    */
-  private calculateRelativeCalendarEnd(
-    rule: RelativeCalendarEndRule,
-    referenceDate: Date,
-  ): DeadlineResult {
+  private calculateRelativeCalendarEnd(rule: RelativeCalendarEndRule, referenceDate: Date): DeadlineResult {
     let deadline: Date;
 
     switch (rule.period) {
@@ -131,15 +112,8 @@ export class DeadlineCalculatorService {
   /**
    * Calculate fixed day of month: always on specific day of month
    */
-  private calculateFixedDayOfMonth(
-    rule: FixedDayOfMonthRule,
-    referenceDate: Date,
-  ): DeadlineResult {
-    let deadline = new Date(
-      referenceDate.getFullYear(),
-      referenceDate.getMonth(),
-      rule.dayOfMonth,
-    );
+  private calculateFixedDayOfMonth(rule: FixedDayOfMonthRule, referenceDate: Date): DeadlineResult {
+    let deadline = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), rule.dayOfMonth);
 
     // If specified day has already passed this month, move to next month
     if (deadline <= referenceDate) {
@@ -156,15 +130,9 @@ export class DeadlineCalculatorService {
   /**
    * Calculate dependent: based on previous step completion + offset days
    */
-  private calculateDependent(
-    rule: DependentRule,
-    referenceDate: Date,
-    previousCompletionDate?: Date,
-  ): DeadlineResult {
+  private calculateDependent(rule: DependentRule, referenceDate: Date, previousCompletionDate?: Date): DeadlineResult {
     if (!previousCompletionDate) {
-      throw new Error(
-        'Dependent rule requires previousStepCompletionDate in context',
-      );
+      throw new Error('Dependent rule requires previousStepCompletionDate in context');
     }
 
     const deadline = addDays(previousCompletionDate, rule.offsetDays);
@@ -221,9 +189,7 @@ export class DeadlineCalculatorService {
         break;
 
       default:
-        throw new Error(
-          `Unknown legal deadline type: ${(rule as any).deadline}`,
-        );
+        throw new Error(`Unknown legal deadline type: ${(rule as any).deadline}`);
     }
 
     return {

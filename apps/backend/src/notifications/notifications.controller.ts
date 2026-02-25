@@ -30,10 +30,7 @@ export class NotificationsController {
    * Get user's notifications
    */
   @Get()
-  async getNotifications(
-    @Req() req: Request,
-    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
-  ) {
+  async getNotifications(@Req() req: Request, @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number) {
     const userId = (req as any).user.userId;
     return this.notificationsService.getUserNotifications(userId, limit);
   }
@@ -42,9 +39,7 @@ export class NotificationsController {
    * Get unread notification count
    */
   @Get('unread/count')
-  async getUnreadCount(
-    @Req() req: Request,
-  ) {
+  async getUnreadCount(@Req() req: Request) {
     const userId = (req as any).user.userId;
     const count = await this.notificationsService.getUnreadCount(userId);
     return { unreadCount: count };
@@ -54,10 +49,7 @@ export class NotificationsController {
    * Mark notification as read
    */
   @Patch(':id/read')
-  async markAsRead(
-    @Param('id') notificationId: string,
-    @Req() req: Request,
-  ) {
+  async markAsRead(@Param('id') notificationId: string, @Req() req: Request) {
     const userId = (req as any).user.userId;
     const result = await this.notificationsService.markAsRead(notificationId, userId);
     return result || { message: 'Notification not found' };
@@ -67,9 +59,7 @@ export class NotificationsController {
    * Mark all notifications as read
    */
   @Post('read-all')
-  async markAllAsRead(
-    @Req() req: Request,
-  ) {
+  async markAllAsRead(@Req() req: Request) {
     const userId = (req as any).user.userId;
     const count = await this.notificationsService.markAllAsRead(userId);
     return { markedAsReadCount: count };
@@ -79,10 +69,7 @@ export class NotificationsController {
    * Delete notification
    */
   @Delete(':id')
-  async deleteNotification(
-    @Param('id') notificationId: string,
-    @Req() req: Request,
-  ) {
+  async deleteNotification(@Param('id') notificationId: string, @Req() req: Request) {
     const userId = (req as any).user.userId;
     const deleted = await this.notificationsService.deleteNotification(notificationId, userId);
     return { deleted, message: deleted ? 'Notification deleted' : 'Notification not found' };
@@ -92,9 +79,7 @@ export class NotificationsController {
    * Get notification preferences
    */
   @Get('preferences')
-  async getPreferences(
-    @Req() req: Request,
-  ) {
+  async getPreferences(@Req() req: Request) {
     const userId = (req as any).user.userId;
     return this.notificationsService.getPreferences(userId);
   }
@@ -103,10 +88,7 @@ export class NotificationsController {
    * Update notification preferences
    */
   @Patch('preferences')
-  async updatePreferences(
-    @Body() dto: UpdateNotificationPreferencesDto,
-    @Req() req: Request,
-  ) {
+  async updatePreferences(@Body() dto: UpdateNotificationPreferencesDto, @Req() req: Request) {
     const userId = (req as any).user.userId;
     return this.notificationsService.updatePreferences(userId, dto);
   }
@@ -115,9 +97,7 @@ export class NotificationsController {
    * Clear old notifications (30+ days)
    */
   @Post('clear-old')
-  async clearOld(
-    @Req() req: Request,
-  ) {
+  async clearOld(@Req() req: Request) {
     const userId = (req as any).user.userId;
     const count = await this.notificationsService.clearOldNotifications(userId);
     return { clearedCount: count };

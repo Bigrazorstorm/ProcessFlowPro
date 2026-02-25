@@ -18,7 +18,7 @@ const makeUser = (partial: Partial<User> = {}): User =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as User);
+  }) as User;
 
 const makeClient = (partial: Partial<Client> = {}): Client =>
   ({
@@ -29,7 +29,7 @@ const makeClient = (partial: Partial<Client> = {}): Client =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as Client);
+  }) as Client;
 
 const makeTemplate = (partial: Partial<WorkflowTemplate> = {}): WorkflowTemplate =>
   ({
@@ -41,7 +41,7 @@ const makeTemplate = (partial: Partial<WorkflowTemplate> = {}): WorkflowTemplate
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as WorkflowTemplate);
+  }) as WorkflowTemplate;
 
 const makeInstance = (partial: Partial<WorkflowInstance> = {}): WorkflowInstance =>
   ({
@@ -56,7 +56,7 @@ const makeInstance = (partial: Partial<WorkflowInstance> = {}): WorkflowInstance
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as WorkflowInstance);
+  }) as WorkflowInstance;
 
 const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
   ({
@@ -69,7 +69,7 @@ const makeStep = (partial: Partial<WorkflowStep> = {}): WorkflowStep =>
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...partial,
-  } as WorkflowStep);
+  }) as WorkflowStep;
 
 const makeQueryBuilder = (overrides: Record<string, jest.Mock> = {}) => {
   const qb: any = {
@@ -143,9 +143,11 @@ describe('DashboardService', () => {
       instancesRepo.count.mockResolvedValue(10);
       usersRepo.count.mockResolvedValue(3);
       stepsRepo.count.mockResolvedValue(2);
-      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({
-        getCount: jest.fn().mockResolvedValueOnce(4).mockResolvedValueOnce(2).mockResolvedValueOnce(9),
-      }));
+      stepsRepo.createQueryBuilder.mockReturnValue(
+        makeQueryBuilder({
+          getCount: jest.fn().mockResolvedValueOnce(4).mockResolvedValueOnce(2).mockResolvedValueOnce(9),
+        }),
+      );
 
       const result = await service.getMetrics('tenant-1');
 
@@ -157,9 +159,11 @@ describe('DashboardService', () => {
       clientsRepo.count.mockResolvedValue(0);
       instancesRepo.count.mockResolvedValue(0);
       usersRepo.count.mockResolvedValue(0);
-      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({
-        getCount: jest.fn().mockResolvedValue(0),
-      }));
+      stepsRepo.createQueryBuilder.mockReturnValue(
+        makeQueryBuilder({
+          getCount: jest.fn().mockResolvedValue(0),
+        }),
+      );
 
       const result = await service.getMetrics('tenant-1');
       expect(result.teamUtilization).toBe(0);
@@ -241,8 +245,15 @@ describe('DashboardService', () => {
     it('should compute success rate for templates', async () => {
       templatesRepo.find.mockResolvedValue([makeTemplate()]);
       const instances = [
-        makeInstance({ status: WorkflowInstanceStatus.COMPLETED, steps: [makeStep({ status: WorkflowStepStatus.DONE })] }),
-        makeInstance({ id: 'i2', status: WorkflowInstanceStatus.ACTIVE, steps: [makeStep({ id: 's2', status: WorkflowStepStatus.OPEN })] }),
+        makeInstance({
+          status: WorkflowInstanceStatus.COMPLETED,
+          steps: [makeStep({ status: WorkflowStepStatus.DONE })],
+        }),
+        makeInstance({
+          id: 'i2',
+          status: WorkflowInstanceStatus.ACTIVE,
+          steps: [makeStep({ id: 's2', status: WorkflowStepStatus.OPEN })],
+        }),
       ];
       instancesRepo.find.mockResolvedValue(instances);
 
@@ -256,9 +267,11 @@ describe('DashboardService', () => {
   describe('getStats', () => {
     it('should return aggregated stats with all categories', async () => {
       instancesRepo.count.mockResolvedValue(5);
-      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({
-        getCount: jest.fn().mockResolvedValue(10),
-      }));
+      stepsRepo.createQueryBuilder.mockReturnValue(
+        makeQueryBuilder({
+          getCount: jest.fn().mockResolvedValue(10),
+        }),
+      );
       clientsRepo.count.mockResolvedValue(8);
       usersRepo.count.mockResolvedValue(4);
 
@@ -275,11 +288,11 @@ describe('DashboardService', () => {
     it('should include workflow status breakdown', async () => {
       instancesRepo.count
         .mockResolvedValueOnce(10) // total
-        .mockResolvedValueOnce(5)  // active
-        .mockResolvedValueOnce(2)  // delayed
-        .mockResolvedValueOnce(1)  // critical
-        .mockResolvedValueOnce(2)  // completed
-        .mockResolvedValue(0);     // clients, users
+        .mockResolvedValueOnce(5) // active
+        .mockResolvedValueOnce(2) // delayed
+        .mockResolvedValueOnce(1) // critical
+        .mockResolvedValueOnce(2) // completed
+        .mockResolvedValue(0); // clients, users
 
       stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder());
 
@@ -341,9 +354,7 @@ describe('DashboardService', () => {
       (step as any).instance.template = makeTemplate();
       (step as any).instance.client = makeClient();
 
-      stepsRepo.createQueryBuilder.mockReturnValue(
-        makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([step]) }),
-      );
+      stepsRepo.createQueryBuilder.mockReturnValue(makeQueryBuilder({ getMany: jest.fn().mockResolvedValue([step]) }));
 
       const result = await service.getUpcomingDeadlines('tenant-1');
       expect(result[0].priority).toBe('high');
@@ -352,10 +363,7 @@ describe('DashboardService', () => {
 
   describe('getRecentActivity', () => {
     it('should return recent activity from instances', async () => {
-      const instances = [
-        makeInstance({ id: 'i1' }),
-        makeInstance({ id: 'i2' }),
-      ];
+      const instances = [makeInstance({ id: 'i1' }), makeInstance({ id: 'i2' })];
       instancesRepo.find.mockResolvedValue(instances);
 
       const result = await service.getRecentActivity('tenant-1', 2);

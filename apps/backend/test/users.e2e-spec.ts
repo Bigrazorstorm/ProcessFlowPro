@@ -42,12 +42,10 @@ describe('Users E2E', () => {
     await userRepo.save(ownerUser);
 
     // Login to get token
-    const loginRes = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: 'owner@test.com',
-        password: 'TestPassword123',
-      });
+    const loginRes = await request(app.getHttpServer()).post('/auth/login').send({
+      email: 'owner@test.com',
+      password: 'TestPassword123',
+    });
 
     ownerToken = loginRes.body.accessToken;
   });
@@ -58,15 +56,12 @@ describe('Users E2E', () => {
 
   describe('POST /users', () => {
     it('should create a new user', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/users')
-        .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          email: 'newuser@test.com',
-          name: 'New User',
-          password: 'SecurePassword123',
-          role: UserRole.ACCOUNTANT,
-        });
+      const res = await request(app.getHttpServer()).post('/users').set('Authorization', `Bearer ${ownerToken}`).send({
+        email: 'newuser@test.com',
+        name: 'New User',
+        password: 'SecurePassword123',
+        role: UserRole.ACCOUNTANT,
+      });
 
       expect(res.status).toBe(201);
       expect(res.body.email).toBe('newuser@test.com');
@@ -75,25 +70,19 @@ describe('Users E2E', () => {
     });
 
     it('should reject duplicate email', async () => {
-      await request(app.getHttpServer())
-        .post('/users')
-        .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          email: 'dup@test.com',
-          name: 'User 1',
-          password: 'SecurePassword123',
-          role: UserRole.ACCOUNTANT,
-        });
+      await request(app.getHttpServer()).post('/users').set('Authorization', `Bearer ${ownerToken}`).send({
+        email: 'dup@test.com',
+        name: 'User 1',
+        password: 'SecurePassword123',
+        role: UserRole.ACCOUNTANT,
+      });
 
-      const res = await request(app.getHttpServer())
-        .post('/users')
-        .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          email: 'dup@test.com',
-          name: 'User 2',
-          password: 'SecurePassword123',
-          role: UserRole.ACCOUNTANT,
-        });
+      const res = await request(app.getHttpServer()).post('/users').set('Authorization', `Bearer ${ownerToken}`).send({
+        email: 'dup@test.com',
+        name: 'User 2',
+        password: 'SecurePassword123',
+        role: UserRole.ACCOUNTANT,
+      });
 
       expect(res.status).toBe(409);
     });
@@ -101,9 +90,7 @@ describe('Users E2E', () => {
 
   describe('GET /users', () => {
     it('should list all users in tenant', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/users')
-        .set('Authorization', `Bearer ${ownerToken}`);
+      const res = await request(app.getHttpServer()).get('/users').set('Authorization', `Bearer ${ownerToken}`);
 
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
@@ -114,9 +101,7 @@ describe('Users E2E', () => {
   describe('PATCH /users/:id', () => {
     it('should update user', async () => {
       // First get users list
-      const listRes = await request(app.getHttpServer())
-        .get('/users')
-        .set('Authorization', `Bearer ${ownerToken}`);
+      const listRes = await request(app.getHttpServer()).get('/users').set('Authorization', `Bearer ${ownerToken}`);
 
       const userId = listRes.body[0].id;
 
