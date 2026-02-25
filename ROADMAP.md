@@ -219,11 +219,11 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 ### 4.1 Backend-Tests
 - [x] Unit-Tests (Jest)
 - [x] Integration-Tests (E2E: Auth, Users, Clients, Templates, Dashboard)
-- [ ] E2E-Tests (Supertest – weitere Module)
+- [x] E2E-Tests (Supertest – Notifications, Workflow-Instanzen)
 - [ ] Test-Coverage >80%
 
 ### 4.2 Frontend-Tests
-- [ ] Component-Tests (React Testing Library)
+- [x] Component-Tests (Vitest + React Testing Library)
 - [ ] Integration-Tests
 - [ ] E2E-Tests (Playwright/Cypress)
 
@@ -272,18 +272,18 @@ ProcessFlow Pro ist ein Workflow-Management-System für Steuerkanzleien zur Auto
 
 ## 📊 Aktueller Status
 
-**Gesamtfortschritt: ~90%**
+**Gesamtfortschritt: ~95%**
 - ✅ Backend: 100% (Phase 1 komplett)
 - ✅ Frontend Grundstruktur: 100% (2.1–2.3)
 - ✅ Frontend Core-Features: 100% (2.4–2.8 komplett)
 - ✅ Frontend Erweiterte Features: 100% (Kalender inkl. Multi-User-Ansicht & Drag & Drop, Benachrichtigungen, Reporting inkl. automatisierte Reports)
-- 🔄 Testing: 35% (Backend Unit-Tests + E2E-Tests für Auth, Users, Clients, Templates, Dashboard)
+- 🔄 Testing: 65% (Backend Unit-Tests + E2E-Tests für Auth, Users, Clients, Templates, Dashboard, Notifications, Workflow-Instanzen; Frontend Component-Tests mit Vitest + React Testing Library)
 - 📋 Production: 0%
 
 **Nächste Schritte:**
-1. Frontend-Tests (Phase 4.2)
-2. Weitere Backend E2E-Tests (Workflow-Instanzen, Notifications)
-3. Test-Coverage auf >80% erhöhen (Phase 4.1)
+1. Test-Coverage auf >80% erhöhen (Phase 4.1)
+2. Frontend Integration-Tests und E2E-Tests (Phase 4.2)
+3. Production-Infrastruktur (Phase 5)
 
 ---
 
