@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { WorkflowInstance } from '../database/entities/workflow-instance.entity';
+import { WorkflowInstance, WorkflowInstanceStatus } from '../database/entities/workflow-instance.entity';
 import { WorkflowStep, WorkflowStepStatus } from '../database/entities/workflow-step.entity';
 import { WorkflowTemplate } from '../database/entities/workflow-template.entity';
 import { User } from '../database/entities/user.entity';
@@ -266,6 +266,131 @@ const assigned = await this.stepsRepository
     }
 
     return metrics.sort((a, b) => b.totalInstancesCreated - a.totalInstancesCreated);
+  }
+
+  /**
+   * Get aggregated stats for the dashboard stats widget
+   */
+  async getStats(tenantId: string) {
+    // Workflows
+    const workflowsTotal = await this.instancesRepository.count({ where: { tenantId } });
+    const workflowsActive = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.ACTIVE } });
+    const workflowsDelayed = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.DELAYED } });
+    const workflowsCritical = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.CRITICAL } });
+    const workflowsCompleted = await this.instancesRepository.count({ where: { tenantId, status: WorkflowInstanceStatus.COMPLETED } });
+
+    // Tasks (workflow steps)
+    const tasksTotal = await this.stepsRepository
+      .createQueryBuilder('step')
+      .innerJoin('step.instance', 'instance')
+      .where('instance.tenantId = :tenantId', { tenantId })
+      .getCount();
+
+    const tasksOpen = await this.stepsRepository
+      .createQueryBuilder('step')
+      .innerJoin('step.instance', 'instance')
+      .where('instance.tenantId = :tenantId', { tenantId })
+      .andWhere('step.status = :status', { status: WorkflowStepStatus.OPEN })
+      .getCount();
+
+    const tasksInProgress = await this.stepsRepository
+      .createQueryBuilder('step')
+      .innerJoin('step.instance', 'instance')
+      .where('instance.tenantId = :tenantId', { tenantId })
+      .andWhere('step.status = :status', { status: WorkflowStepStatus.IN_PROGRESS })
+      .getCount();
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(todayStart);
+    todayEnd.setDate(todayEnd.getDate() + 1);
+
+    const tasksDueToday = await this.stepsRepository
+      .createQueryBuilder('step')
+      .innerJoin('step.instance', 'instance')
+      .where('instance.tenantId = :tenantId', { tenantId })
+      .andWhere('step.dueDate >= :todayStart', { todayStart })
+      .andWhere('step.dueDate < :todayEnd', { todayEnd })
+      .andWhere('step.status != :done', { done: WorkflowStepStatus.DONE })
+      .getCount();
+
+    const now = new Date();
+    const tasksOverdue = await this.stepsRepository
+      .createQueryBuilder('step')
+      .innerJoin('step.instance', 'instance')
+      .where('instance.tenantId = :tenantId', { tenantId })
+      .andWhere('step.dueDate < :now', { now })
+      .andWhere('step.status != :done', { done: WorkflowStepStatus.DONE })
+      .getCount();
+
+    // Clients
+    const clientsTotal = await this.clientsRepository.count({ where: { tenantId } });
+    const clientsActive = await this.clientsRepository.count({ where: { tenantId, isActive: true } });
+
+    // Users
+    const usersTotal = await this.usersRepository.count({ where: { tenantId } });
+    const usersActive = await this.usersRepository.count({ where: { tenantId, isActive: true } });
+
+    return {
+      workflows: {
+        total: workflowsTotal,
+        active: workflowsActive,
+        delayed: workflowsDelayed,
+        critical: workflowsCritical,
+        completed: workflowsCompleted,
+      },
+      tasks: {
+        total: tasksTotal,
+        open: tasksOpen,
+        inProgress: tasksInProgress,
+        dueToday: tasksDueToday,
+        overdue: tasksOverdue,
+      },
+      clients: {
+        total: clientsTotal,
+        active: clientsActive,
+      },
+      users: {
+        total: usersTotal,
+        active: usersActive,
+      },
+    };
+  }
+
+  /**
+   * Get upcoming deadlines within the next N days
+   */
+  async getUpcomingDeadlines(tenantId: string, days: number = 7) {
+    const now = new Date();
+    const future = new Date(now);
+    future.setDate(future.getDate() + days);
+
+    const steps = await this.stepsRepository
+      .createQueryBuilder('step')
+      .leftJoinAndSelect('step.instance', 'instance')
+      .leftJoinAndSelect('instance.client', 'client')
+      .leftJoinAndSelect('step.templateStep', 'templateStep')
+      .leftJoinAndSelect('instance.template', 'template')
+      .where('instance.tenantId = :tenantId', { tenantId })
+      .andWhere('step.dueDate >= :now', { now })
+      .andWhere('step.dueDate <= :future', { future })
+      .andWhere('step.status != :done', { done: WorkflowStepStatus.DONE })
+      .orderBy('step.dueDate', 'ASC')
+      .getMany();
+
+    return steps.map((step) => {
+      const daysUntilDue = Math.ceil((step.dueDate!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const priority = daysUntilDue <= 1 ? 'high' : daysUntilDue <= 3 ? 'medium' : 'low';
+      return {
+        id: step.id,
+        workflowName: step.instance?.template?.name || 'Unknown',
+        clientName: step.instance?.client?.name || 'Unknown',
+        stepName: step.templateStep?.name || 'Unknown',
+        dueDate: step.dueDate!.toISOString(),
+        status: step.status,
+        priority,
+      };
+    });
   }
 
   /**

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useInstances, WorkflowInstanceStatus } from '../hooks/useInstances';
 import { CreateInstanceModal } from '../components/CreateInstanceModal';
+import { api } from '../lib/api';
 
 interface Client {
   id: string;
@@ -27,11 +28,11 @@ export function Instances() {
     const loadMetadata = async () => {
       try {
         const [clientsRes, templatesRes] = await Promise.all([
-          fetch('/api/clients').then(r => r.json()),
-          fetch('/api/workflow-templates').then(r => r.json()),
+          api.get('/clients'),
+          api.get('/workflow-templates'),
         ]);
-        setClients(clientsRes);
-        setTemplates(templatesRes);
+        setClients(Array.isArray(clientsRes.data) ? clientsRes.data : []);
+        setTemplates(Array.isArray(templatesRes.data) ? templatesRes.data : []);
       } catch (err) {
         console.error('Error loading metadata:', err);
       }

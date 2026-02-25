@@ -87,6 +87,29 @@ export class DashboardController {
   }
 
   /**
+   * Get aggregated stats for the dashboard stats widget
+   */
+  @Get('stats')
+  async getStats(
+    @Req() req: Request,
+  ) {
+    const tenantId = (req as any).user.tenantId;
+    return this.dashboardService.getStats(tenantId);
+  }
+
+  /**
+   * Get upcoming deadlines within the next N days
+   */
+  @Get('upcoming-deadlines')
+  async getUpcomingDeadlines(
+    @Req() req: Request,
+    @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
+  ) {
+    const tenantId = (req as any).user.tenantId;
+    return this.dashboardService.getUpcomingDeadlines(tenantId, days);
+  }
+
+  /**
    * Get recent activity
    */
   @Get('activity')
